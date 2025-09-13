@@ -10,23 +10,68 @@
       "type": "video",
       "clips": [
         {
+<<<<<<< HEAD
           "id": "video-clip-1",
           "assetUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
           "startInFrames": 0,
           "durationInFrames": 300,
+=======
+          "id": "intro-video",
+          "assetUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          "startInFrames": 0,
+          "durationInFrames": 450,
+>>>>>>> better-prompting
           "effects": [
             { "type": "fade-in", "durationInFrames": 30 },
             { "type": "fade-out", "durationInFrames": 30 }
           ]
+<<<<<<< HEAD
+=======
+        },
+        {
+          "id": "main-video",
+          "assetUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+          "startInFrames": 480,
+          "durationInFrames": 900,
+          "effects": [
+            { "type": "fade-in", "durationInFrames": 15 }
+          ]
+        },
+        {
+          "id": "outro-video",
+          "assetUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          "startInFrames": 1410,
+          "durationInFrames": 360,
+          "effects": [
+            { "type": "fade-out", "durationInFrames": 45 }
+          ]
+>>>>>>> better-prompting
         }
       ]
     },
     {
       "id": "track-2",
+<<<<<<< HEAD
+=======
+      "type": "video",
+      "clips": [
+        {
+          "id": "background-video",
+          "assetUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+          "startInFrames": 450,
+          "durationInFrames": 600,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "track-3",
+>>>>>>> better-prompting
       "type": "text",
       "clips": [
         {
           "id": "text-clip-1",
+<<<<<<< HEAD
           "text": "Hello, Remotion!",
           "startInFrames": 60,
           "durationInFrames": 180,
@@ -38,6 +83,236 @@
           },
           "effects": [
             { "type": "slide-in", "direction": "from-bottom", "durationInFrames": 20 }
+=======
+          "text": "Welcome to Vibe Movie",
+          "startInFrames": 30,
+          "durationInFrames": 90,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 72,
+            "fontWeight": "bold",
+            "color": "#FFFFFF",
+            "textShadow": "2px 2px 4px rgba(0,0,0,0.5)"
+          },
+          "position": {
+            "x": 50,
+            "y": 20,
+            "unit": "%",
+            "anchor": "top-center"
+          },
+          "layout": {
+            "textAlign": "center",
+            "maxWidth": 80,
+            "maxWidthUnit": "%",
+            "wordWrap": "normal"
+          },
+          "effects": [
+            { "type": "fade-in", "durationInFrames": 15 },
+            { "type": "fade-out", "durationInFrames": 15 }
+          ]
+        },
+        {
+          "id": "text-clip-2",
+          "text": "AI-Powered Video Editor",
+          "startInFrames": 30,
+          "durationInFrames": 90,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 48,
+            "fontWeight": "normal",
+            "color": "#FFD700",
+            "textShadow": "1px 1px 2px rgba(0,0,0,0.7)"
+          },
+          "position": {
+            "x": 50,
+            "y": 70,
+            "unit": "%",
+            "anchor": "center"
+          },
+          "layout": {
+            "textAlign": "center",
+            "maxWidth": 60,
+            "maxWidthUnit": "%",
+            "wordWrap": "normal"
+          },
+          "effects": [
+            { "type": "slide-in", "direction": "from-bottom", "durationInFrames": 20 },
+            { "type": "fade-out", "durationInFrames": 15 }
+          ]
+        },
+        {
+          "id": "text-clip-3",
+          "text": "Create Amazing Videos",
+          "startInFrames": 20,
+          "durationInFrames": 200,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 56,
+            "fontWeight": "bold",
+            "color": "#00FF88",
+            "textShadow": "2px 2px 6px rgba(0,0,0,0.8)"
+          },
+          "position": {
+            "x": 10,
+            "y": 90,
+            "unit": "%",
+            "anchor": "bottom-left"
+          },
+          "layout": {
+            "textAlign": "left",
+            "maxWidth": 70,
+            "maxWidthUnit": "%",
+            "wordWrap": "break-word"
+          },
+          "effects": [
+            { "type": "fade-in", "durationInFrames": 20 },
+            { "type": "fade-out", "durationInFrames": 20 }
+          ]
+        },
+        {
+          "id": "chapter-title-1",
+          "text": "Chapter 1: Getting Started",
+          "startInFrames": 480,
+          "durationInFrames": 120,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 64,
+            "fontWeight": "bold",
+            "color": "#FFFFFF",
+            "textShadow": "3px 3px 8px rgba(0,0,0,0.9)"
+          },
+          "position": {
+            "x": 50,
+            "y": 15,
+            "unit": "%",
+            "anchor": "top-center"
+          },
+          "layout": {
+            "textAlign": "center",
+            "maxWidth": 90,
+            "maxWidthUnit": "%",
+            "wordWrap": "normal"
+          },
+          "effects": [
+            { "type": "slide-in", "direction": "from-top", "durationInFrames": 25 },
+            { "type": "fade-out", "durationInFrames": 25 }
+          ]
+        },
+        {
+          "id": "subtitle-1",
+          "text": "Learn the basics of video editing",
+          "startInFrames": 520,
+          "durationInFrames": 180,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 36,
+            "fontWeight": "normal",
+            "color": "#FFD700",
+            "textShadow": "1px 1px 3px rgba(0,0,0,0.7)"
+          },
+          "position": {
+            "x": 50,
+            "y": 25,
+            "unit": "%",
+            "anchor": "top-center"
+          },
+          "layout": {
+            "textAlign": "center",
+            "maxWidth": 80,
+            "maxWidthUnit": "%",
+            "wordWrap": "normal"
+          },
+          "effects": [
+            { "type": "fade-in", "durationInFrames": 20 },
+            { "type": "fade-out", "durationInFrames": 20 }
+          ]
+        },
+        {
+          "id": "chapter-title-2",
+          "text": "Chapter 2: Advanced Features",
+          "startInFrames": 900,
+          "durationInFrames": 120,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 64,
+            "fontWeight": "bold",
+            "color": "#FFFFFF",
+            "textShadow": "3px 3px 8px rgba(0,0,0,0.9)"
+          },
+          "position": {
+            "x": 50,
+            "y": 15,
+            "unit": "%",
+            "anchor": "top-center"
+          },
+          "layout": {
+            "textAlign": "center",
+            "maxWidth": 90,
+            "maxWidthUnit": "%",
+            "wordWrap": "normal"
+          },
+          "effects": [
+            { "type": "slide-in", "direction": "from-right", "durationInFrames": 30 },
+            { "type": "fade-out", "durationInFrames": 25 }
+          ]
+        },
+        {
+          "id": "call-to-action",
+          "text": "Try it yourself today!",
+          "startInFrames": 1500,
+          "durationInFrames": 180,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 52,
+            "fontWeight": "bold",
+            "color": "#FF4444",
+            "textShadow": "2px 2px 5px rgba(0,0,0,0.8)"
+          },
+          "position": {
+            "x": 50,
+            "y": 80,
+            "unit": "%",
+            "anchor": "center"
+          },
+          "layout": {
+            "textAlign": "center",
+            "maxWidth": 70,
+            "maxWidthUnit": "%",
+            "wordWrap": "normal"
+          },
+          "effects": [
+            { "type": "slide-in", "direction": "from-bottom", "durationInFrames": 35 },
+            { "type": "fade-out", "durationInFrames": 30 }
+          ]
+        },
+        {
+          "id": "credits-text",
+          "text": "Created with Vibe Movie AI Editor",
+          "startInFrames": 1680,
+          "durationInFrames": 90,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 28,
+            "fontWeight": "normal",
+            "color": "#CCCCCC",
+            "textShadow": "1px 1px 2px rgba(0,0,0,0.6)"
+          },
+          "position": {
+            "x": 95,
+            "y": 95,
+            "unit": "%",
+            "anchor": "bottom-right"
+          },
+          "layout": {
+            "textAlign": "right",
+            "maxWidth": 40,
+            "maxWidthUnit": "%",
+            "wordWrap": "normal"
+          },
+          "effects": [
+            { "type": "fade-in", "durationInFrames": 15 },
+            { "type": "fade-out", "durationInFrames": 15 }
+>>>>>>> better-prompting
           ]
         }
       ]

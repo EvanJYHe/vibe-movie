@@ -1,3 +1,27 @@
+# Claude AI Assistant files
+.claude/
+*.claude
+
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+.npm
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
 # Logs
 logs
 *.log
@@ -7,12 +31,28 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependency directories
-node_modules/
-backend/node_modules/
-frontend/node_modules/
-.npm
-.pnpm-debug.log*
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.cursor/
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
 
 # Runtime data
 pids
@@ -20,20 +60,12 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage directory
 coverage/
 *.lcov
-
-# nyc test coverage
 .nyc_output
 
 # ESLint cache
-.eslintcache
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
 .eslintcache
 
 # Microbundle cache
@@ -51,28 +83,9 @@ coverage/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-
 # Backend uploads
 backend/uploads/
 
-# Vite
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Temporary files
+tmp/
+temp/

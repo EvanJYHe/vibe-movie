@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { ChatMessage, ChatError } from '../types/chat';
+<<<<<<< HEAD
 import { chatApi } from '../services/chatApi';
 import { chatStorage } from '../utils/chatStorage';
 import { useTimelineStore } from '../stores/timelineStore';
@@ -35,12 +36,35 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
           wordBreak: 'break-word',
         }}
       >
+=======
+import type { VideoTimeline } from '../types/timeline';
+import { chatApi } from '../services/chatApi';
+import { chatStorage } from '../utils/chatStorage';
+
+const generateId = () => `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+
+const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
+  const isUser = message.role === 'user';
+  return (
+    <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: '12px', padding: '0 16px' }}>
+      <div style={{
+        maxWidth: '70%',
+        padding: '12px 16px',
+        borderRadius: '12px',
+        backgroundColor: isUser ? '#007bff' : '#f1f3f5',
+        color: isUser ? 'white' : '#333',
+        fontSize: '14px',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+      }}>
+>>>>>>> better-prompting
         {message.content}
       </div>
     </div>
   );
 };
 
+<<<<<<< HEAD
 // Error Banner Component
 const ErrorBanner: React.FC<{
   error: ChatError;
@@ -165,10 +189,19 @@ interface ChatPanelProps {
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
+=======
+interface ChatPanelProps {
+  timeline: VideoTimeline;
+  onTimelineUpdate: (timeline: VideoTimeline) => void;
+}
+
+export const ChatPanel: React.FC<ChatPanelProps> = ({ timeline, onTimelineUpdate }) => {
+>>>>>>> better-prompting
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ChatError | null>(null);
   const [inputValue, setInputValue] = useState('');
+<<<<<<< HEAD
   const [showConfirm, setShowConfirm] = useState(false);
   const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -202,12 +235,30 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+=======
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setMessages(chatStorage.loadHistory());
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+>>>>>>> better-prompting
 
   const saveMessages = useCallback((newMessages: ChatMessage[]) => {
     chatStorage.saveHistory(newMessages);
   }, []);
 
+<<<<<<< HEAD
   const handleSendMessage = async (content = inputValue.trim()) => {
+=======
+  const handleSendMessage = async () => {
+    const content = inputValue.trim();
+>>>>>>> better-prompting
     if (!content || isLoading) return;
 
     const userMessage: ChatMessage = {
@@ -222,6 +273,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
     saveMessages(newMessages);
     setInputValue('');
     setError(null);
+<<<<<<< HEAD
     setLastFailedMessage(null);
     setIsLoading(true);
 
@@ -229,6 +281,12 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
       // Convert current timeline to Remotion format for AI context
       const timeline = convertTimelineToRemotionFormat(tracks, assets);
       const response = await chatApi.sendMessage(newMessages, timeline, videoFile || undefined);
+=======
+    setIsLoading(true);
+
+    try {
+      const response = await chatApi.sendMessage(newMessages, timeline);
+>>>>>>> better-prompting
 
       const assistantMessage: ChatMessage = {
         id: response.id,
@@ -241,6 +299,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
       setMessages(finalMessages);
       saveMessages(finalMessages);
 
+<<<<<<< HEAD
       // Handle timeline updates from AI
       if (response.timeline) {
         // TODO: Apply timeline updates to the store
@@ -336,10 +395,58 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
             opacity: messages.length === 0 ? 0.5 : 1,
           }}
         >
+=======
+      if (response.timeline) {
+        onTimelineUpdate(response.timeline);
+      }
+    } catch (err) {
+      setError(err as ChatError);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    chatStorage.clearHistory();
+    setError(null);
+  };
+
+  return (
+    <div style={{
+      width: '400px',
+      height: '600px',
+      display: 'flex',
+      flexDirection: 'column',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      backgroundColor: 'white',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+    }}>
+      <div style={{ padding: '16px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>AI Chat</h3>
+        <button onClick={clearChat} disabled={messages.length === 0} style={{
+          padding: '4px 8px',
+          fontSize: '12px',
+          border: '1px solid #ddd',
+          borderRadius: '4px',
+          backgroundColor: 'white',
+          cursor: messages.length === 0 ? 'not-allowed' : 'pointer',
+          opacity: messages.length === 0 ? 0.5 : 1,
+        }}>
+>>>>>>> better-prompting
           Clear
         </button>
       </div>
 
+<<<<<<< HEAD
       {/* Messages Area */}
       <div
         style={{
@@ -386,6 +493,27 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
                 fontStyle: 'italic',
               }}
             >
+=======
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0' }}>
+        {messages.length === 0 ? (
+          <div style={{ textAlign: 'center', color: '#666', fontSize: '14px', padding: '40px 20px' }}>
+            Message the AI to get started...
+          </div>
+        ) : (
+          messages.map((message) => <MessageBubble key={message.id} message={message} />)
+        )}
+
+        {isLoading && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '0 16px' }}>
+            <div style={{
+              padding: '12px 16px',
+              borderRadius: '12px',
+              backgroundColor: '#f1f3f5',
+              color: '#666',
+              fontSize: '14px',
+              fontStyle: 'italic',
+            }}>
+>>>>>>> better-prompting
               AI is typing...
             </div>
           </div>
@@ -394,6 +522,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
         <div ref={messagesEndRef} />
       </div>
 
+<<<<<<< HEAD
       {/* Error Banner */}
       {error && (
         <ErrorBanner
@@ -441,19 +570,41 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
           </div>
         )}
 
+=======
+      {error && (
+        <div style={{
+          margin: '12px 16px',
+          padding: '12px',
+          backgroundColor: '#fee',
+          border: '1px solid #fcc',
+          borderRadius: '8px',
+          fontSize: '14px',
+          color: '#d63384',
+        }}>
+          {error.message}
+        </div>
+      )}
+
+      <div style={{ padding: '16px', borderTop: '1px solid #eee' }}>
+>>>>>>> better-prompting
         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
           <textarea
             ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
+<<<<<<< HEAD
             placeholder="Type a message... (Shift+Enter for newline)"
+=======
+            placeholder="Type a message..."
+>>>>>>> better-prompting
             disabled={isLoading}
             style={{
               flex: 1,
               minHeight: '20px',
               maxHeight: '100px',
               padding: '8px 12px',
+<<<<<<< HEAD
               border: '1px solid #3a3a3a',
               borderRadius: '6px',
               fontSize: '14px',
@@ -493,10 +644,23 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
           <button
             onClick={() => handleSendMessage()}
             disabled={!canSend}
+=======
+              border: '1px solid #ddd',
+              borderRadius: '6px',
+              fontSize: '14px',
+              resize: 'none',
+              outline: 'none',
+            }}
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={!inputValue.trim() || isLoading}
+>>>>>>> better-prompting
             style={{
               padding: '8px 16px',
               border: 'none',
               borderRadius: '6px',
+<<<<<<< HEAD
               backgroundColor: canSend ? '#0066cc' : '#3a3a3a',
               color: canSend ? 'white' : '#666',
               cursor: canSend ? 'pointer' : 'not-allowed',
@@ -504,11 +668,20 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
               fontWeight: '500',
             }}
             aria-label="Send message"
+=======
+              backgroundColor: inputValue.trim() && !isLoading ? '#007bff' : '#e9ecef',
+              color: inputValue.trim() && !isLoading ? 'white' : '#6c757d',
+              cursor: inputValue.trim() && !isLoading ? 'pointer' : 'not-allowed',
+              fontSize: '14px',
+              fontWeight: '500',
+            }}
+>>>>>>> better-prompting
           >
             Send
           </button>
         </div>
       </div>
+<<<<<<< HEAD
 
       {/* Screen reader announcements */}
       <div
@@ -532,6 +705,8 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
           onCancel={() => setShowConfirm(false)}
         />
       )}
+=======
+>>>>>>> better-prompting
     </div>
   );
 };

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Media source reference
 export interface MediaAsset {
   id: string;
@@ -88,6 +89,8 @@ export interface TrimHandle {
 }
 
 // Remotion-specific types
+=======
+>>>>>>> better-prompting
 export interface ProjectSettings {
   width: number;
   height: number;
@@ -127,6 +130,7 @@ export interface TextStyle {
   textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 }
 
+<<<<<<< HEAD
 // Remotion clip types (converted from timeline Clip)
 export interface RemotionVideoClip {
   id: string;
@@ -156,6 +160,8 @@ export interface RemotionTextClip {
 export type RemotionClip = RemotionVideoClip | RemotionTextClip;
 
 // Alternative clip types for better-prompting compatibility
+=======
+>>>>>>> better-prompting
 export interface BaseClip {
   id: string;
   startInFrames: number;
@@ -174,14 +180,24 @@ export interface TextClip extends BaseClip {
   layout?: Layout;
 }
 
+<<<<<<< HEAD
 export interface RemotionTrack {
   id: string;
   type: 'video' | 'text';
   clips: RemotionClip[];
+=======
+export type Clip = VideoClip | TextClip;
+
+export interface Track {
+  id: string;
+  type: 'video' | 'text';
+  clips: Clip[];
+>>>>>>> better-prompting
 }
 
 export interface VideoTimeline {
   project: ProjectSettings;
+<<<<<<< HEAD
   timeline: RemotionTrack[];
 }
 
@@ -200,4 +216,7 @@ export interface Project {
   tracks: Track[];
   assets: MediaAsset[];
   settings: CompositionSettings;
+=======
+  timeline: Track[];
+>>>>>>> better-prompting
 }
