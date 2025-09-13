@@ -140,6 +140,8 @@ export interface RemotionVideoClip {
   position?: { x: number; y: number };
   rotation?: number;
   opacity?: number;
+  volume?: number;
+  muted?: boolean;
 }
 
 export interface RemotionTextClip {

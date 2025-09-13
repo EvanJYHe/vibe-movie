@@ -36,7 +36,8 @@ const VideoClipComponent: React.FC<{ clip: RemotionVideoClip; track: RemotionTra
         startFrom={clip.sourceIn || 0}
         endAt={clip.sourceOut}
         onError={handleVideoError}
-        muted={true}
+        volume={clip.volume ?? 1}
+        muted={false}
       />
     </div>
   );
