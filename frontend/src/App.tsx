@@ -1,4 +1,5 @@
 import { Timeline } from "./components/Timeline/Timeline";
+import { VideoPreview } from "./components/VideoPreview";
 import "./App.css";
 
 function App() {
@@ -8,7 +9,12 @@ function App() {
         <h1>Vibe Movie</h1>
       </header>
       <main className="app-main">
-        <Timeline />
+        <div className="video-preview-container">
+          <VideoPreview />
+        </div>
+        <div className="timeline-container">
+          <Timeline />
+        </div>
       </main>
     </div>
   );

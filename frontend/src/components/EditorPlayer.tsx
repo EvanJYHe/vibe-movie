@@ -1,0 +1,26 @@
+import { Player } from '@remotion/player';
+import { VideoComposition } from '../remotion/VideoComposition';
+import type { VideoTimeline } from '../types/timeline';
+import { calculateTotalDuration } from '../utils/timeline';
+import timelineData from '../data/timeline.json';
+
+export const EditorPlayer: React.FC = () => {
+  const timeline: VideoTimeline = timelineData as VideoTimeline;
+  const totalDuration = calculateTotalDuration(timeline);
+
+  return (
+    <Player
+      component={VideoComposition}
+      durationInFrames={totalDuration}
+      compositionWidth={timeline.project.width}
+      compositionHeight={timeline.project.height}
+      fps={timeline.project.fps}
+      inputProps={{ timeline }}
+      style={{
+        width: 960,
+        height: 540,
+      }}
+      controls
+    />
+  );
+};

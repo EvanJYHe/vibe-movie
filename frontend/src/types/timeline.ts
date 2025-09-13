@@ -9,13 +9,14 @@ export interface MediaAsset {
   thumbnailUrl?: string;
 }
 
+// Timeline editor types
 export interface Clip {
   id: string;
   trackId: string;
 
   // Timeline positioning
-  startTime: number;  // Position on timeline
-  duration: number;   // Duration on timeline
+  startTime: number;  // Position on timeline in seconds
+  duration: number;   // Duration on timeline in seconds
 
   // Source trimming
   trimStart: number;  // How much trimmed from start (sourceIn)
@@ -46,6 +47,9 @@ export interface Clip {
     scene?: string;
     tags?: string[];
   };
+
+  // Remotion effects (optional)
+  effects?: Effect[];
 }
 
 export interface Track {
@@ -56,6 +60,7 @@ export interface Track {
   locked: boolean;
   color: string;
   clips: Clip[];
+  type?: 'video' | 'audio' | 'image' | 'text'; // For Remotion compatibility
 }
 
 export interface TimelineState {
@@ -80,6 +85,61 @@ export interface TrimHandle {
   side: 'start' | 'end';
   initialPosition: number;
   initialDuration: number;
+}
+
+// Remotion-specific types
+export interface ProjectSettings {
+  width: number;
+  height: number;
+  fps: number;
+}
+
+export interface Effect {
+  type: 'fade-in' | 'fade-out' | 'slide-in';
+  durationInFrames: number;
+  direction?: 'from-bottom' | 'from-top' | 'from-left' | 'from-right';
+}
+
+export interface TextStyle {
+  fontFamily: string;
+  fontSize: number;
+  fontWeight: string;
+  color: string;
+}
+
+// Remotion clip types (converted from timeline Clip)
+export interface RemotionVideoClip {
+  id: string;
+  assetUrl: string;
+  startInFrames: number;
+  durationInFrames: number;
+  effects?: Effect[];
+  scale?: number;
+  position?: { x: number; y: number };
+  rotation?: number;
+  opacity?: number;
+}
+
+export interface RemotionTextClip {
+  id: string;
+  text: string;
+  style: TextStyle;
+  startInFrames: number;
+  durationInFrames: number;
+  effects?: Effect[];
+}
+
+export type RemotionClip = RemotionVideoClip | RemotionTextClip;
+
+export interface RemotionTrack {
+  id: string;
+  type: 'video' | 'text';
+  clips: RemotionClip[];
+}
+
+export interface VideoTimeline {
+  project: ProjectSettings;
+  timeline: RemotionTrack[];
 }
 
 // For Remotion export
