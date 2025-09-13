@@ -133,6 +133,9 @@ export const Timeline: React.FC = () => {
 
   return (
     <div className="timeline-wrapper">
+      <div className="timeline-help">
+        <span>Drag media from library to timeline | Double-click: Split | Delete: Remove | G: Toggle snap | +/-: Zoom | S: Split at playhead</span>
+      </div>
       <div className="timeline-toolbar">
         <button onClick={() => addTrack()} className="toolbar-btn">
           + Add Track
@@ -201,10 +204,6 @@ export const Timeline: React.FC = () => {
           )}
         </DragOverlay>
       </DndContext>
-
-      <div className="timeline-help">
-        <span>Drag media from library to timeline | Double-click: Split | Delete: Remove | G: Toggle snap | +/-: Zoom | S: Split at playhead</span>
-      </div>
 
       {showUpload && (
         <MediaUpload

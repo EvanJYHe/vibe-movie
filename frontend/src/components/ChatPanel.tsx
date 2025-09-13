@@ -25,8 +25,8 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
           maxWidth: '70%',
           padding: '12px 16px',
           borderRadius: '12px',
-          backgroundColor: isUser ? '#007bff' : '#f1f3f5',
-          color: isUser ? 'white' : '#333',
+          backgroundColor: isUser ? '#0066cc' : '#2a2a2a',
+          color: isUser ? 'white' : '#e0e0e0',
           fontSize: '14px',
           lineHeight: '1.4',
           whiteSpace: 'pre-wrap',
@@ -49,11 +49,11 @@ const ErrorBanner: React.FC<{
     style={{
       margin: '12px 16px',
       padding: '12px',
-      backgroundColor: '#fee',
-      border: '1px solid #fcc',
+      backgroundColor: '#3a1f1f',
+      border: '1px solid #5a2a2a',
       borderRadius: '8px',
       fontSize: '14px',
-      color: '#d63384',
+      color: '#ff6b6b',
     }}
   >
     <div style={{ marginBottom: '8px' }}>{error.message}</div>
@@ -63,10 +63,10 @@ const ErrorBanner: React.FC<{
         style={{
           padding: '4px 8px',
           fontSize: '12px',
-          border: '1px solid #d63384',
+          border: '1px solid #ff6b6b',
           borderRadius: '4px',
-          backgroundColor: 'white',
-          color: '#d63384',
+          backgroundColor: '#2a2a2a',
+          color: '#ff6b6b',
           cursor: 'pointer',
         }}
       >
@@ -80,7 +80,7 @@ const ErrorBanner: React.FC<{
           border: 'none',
           borderRadius: '4px',
           backgroundColor: 'transparent',
-          color: '#d63384',
+          color: '#ff6b6b',
           cursor: 'pointer',
           textDecoration: 'underline',
         }}
@@ -114,7 +114,7 @@ const ConfirmDialog: React.FC<{
   >
     <div
       style={{
-        backgroundColor: 'white',
+        backgroundColor: '#2a2a2a',
         padding: '24px',
         borderRadius: '8px',
         maxWidth: '400px',
@@ -122,7 +122,7 @@ const ConfirmDialog: React.FC<{
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div style={{ marginBottom: '16px', fontSize: '16px', color: '#333' }}>
+      <div style={{ marginBottom: '16px', fontSize: '16px', color: '#e0e0e0' }}>
         {message}
       </div>
       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
@@ -130,9 +130,10 @@ const ConfirmDialog: React.FC<{
           onClick={onCancel}
           style={{
             padding: '8px 16px',
-            border: '1px solid #ddd',
+            border: '1px solid #3a3a3a',
             borderRadius: '4px',
-            backgroundColor: 'white',
+            backgroundColor: '#1a1a1a',
+            color: '#e0e0e0',
             cursor: 'pointer',
           }}
         >
@@ -144,7 +145,7 @@ const ConfirmDialog: React.FC<{
             padding: '8px 16px',
             border: 'none',
             borderRadius: '4px',
-            backgroundColor: '#dc3545',
+            backgroundColor: '#ff6b6b',
             color: 'white',
             cursor: 'pointer',
           }}
@@ -157,7 +158,11 @@ const ConfirmDialog: React.FC<{
 );
 
 // Main ChatPanel Component
-export const ChatPanel: React.FC = () => {
+interface ChatPanelProps {
+  width?: number;
+}
+
+export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ChatError | null>(null);
@@ -274,27 +279,28 @@ export const ChatPanel: React.FC = () => {
   return (
     <div
       style={{
-        width: '400px',
-        height: '600px',
+        width: `${width}px`,
+        height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        backgroundColor: 'white',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+        backgroundColor: '#1a1a1a',
+        borderLeft: '1px solid #3a3a3a',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        flexShrink: 0,
       }}
     >
       {/* Header */}
       <div
         style={{
           padding: '16px',
-          borderBottom: '1px solid #eee',
+          borderBottom: '1px solid #3a3a3a',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          backgroundColor: '#252525',
         }}
       >
-        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#333' }}>
+        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#e0e0e0' }}>
           AI Chat
         </h3>
         <button
@@ -303,10 +309,10 @@ export const ChatPanel: React.FC = () => {
           style={{
             padding: '4px 8px',
             fontSize: '12px',
-            border: '1px solid #ddd',
+            border: '1px solid #4a4a4a',
             borderRadius: '4px',
-            backgroundColor: 'white',
-            color: '#666',
+            backgroundColor: '#3a3a3a',
+            color: '#999',
             cursor: messages.length === 0 ? 'not-allowed' : 'pointer',
             opacity: messages.length === 0 ? 0.5 : 1,
           }}
@@ -355,8 +361,8 @@ export const ChatPanel: React.FC = () => {
                 maxWidth: '70%',
                 padding: '12px 16px',
                 borderRadius: '12px',
-                backgroundColor: '#f1f3f5',
-                color: '#666',
+                backgroundColor: '#2a2a2a',
+                color: '#999',
                 fontSize: '14px',
                 fontStyle: 'italic',
               }}
@@ -382,7 +388,7 @@ export const ChatPanel: React.FC = () => {
       <div
         style={{
           padding: '16px',
-          borderTop: '1px solid #eee',
+          borderTop: '1px solid #3a3a3a',
         }}
       >
         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
@@ -398,12 +404,14 @@ export const ChatPanel: React.FC = () => {
               minHeight: '20px',
               maxHeight: '100px',
               padding: '8px 12px',
-              border: '1px solid #ddd',
+              border: '1px solid #3a3a3a',
               borderRadius: '6px',
               fontSize: '14px',
               fontFamily: 'inherit',
               resize: 'none',
               outline: 'none',
+              backgroundColor: '#2a2a2a',
+              color: '#e0e0e0',
             }}
             aria-label="Chat message input"
           />
@@ -414,8 +422,8 @@ export const ChatPanel: React.FC = () => {
               padding: '8px 16px',
               border: 'none',
               borderRadius: '6px',
-              backgroundColor: canSend ? '#007bff' : '#e9ecef',
-              color: canSend ? 'white' : '#6c757d',
+              backgroundColor: canSend ? '#0066cc' : '#3a3a3a',
+              color: canSend ? 'white' : '#666',
               cursor: canSend ? 'pointer' : 'not-allowed',
               fontSize: '14px',
               fontWeight: '500',
