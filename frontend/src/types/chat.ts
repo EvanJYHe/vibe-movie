@@ -19,3 +19,8 @@ export interface ChatError {
   message: string;
   code?: string;
 }
+
+export interface StorageData {
+  messages: ChatMessage[];
+  lastUpdated: number;
+}

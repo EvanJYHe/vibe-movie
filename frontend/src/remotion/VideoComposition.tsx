@@ -1,6 +1,7 @@
 import { Sequence, Video, useCurrentFrame, AbsoluteFill } from 'remotion';
 import type { VideoTimeline, Track, VideoClip, TextClip } from '../types/timeline';
 import { getClipLocalFrame, isEffectActive, getEffectProgress } from '../utils/timeline';
+import { calculatePosition } from '../utils/positioning';
 
 interface VideoCompositionProps {
   timeline: VideoTimeline;
@@ -33,7 +34,6 @@ const VideoClipComponent: React.FC<{ clip: VideoClip; track: Track }> = ({ clip 
       <Video
         src={clip.assetUrl}
         style={{ width: '100%', height: '100%' }}
-        startFrom={0}
         onError={handleVideoError}
         muted={true}
       />
@@ -46,7 +46,8 @@ const TextClipComponent: React.FC<{ clip: TextClip; track: Track }> = ({ clip })
   const localFrame = getClipLocalFrame(clip, frame);
 
   let opacity = 1;
-  let transform = 'translate(-50%, -50%)';
+  const positionData = calculatePosition(clip.position, clip.layout);
+  let transform = positionData.transform;
 
   if (clip.effects) {
     clip.effects.forEach((effect) => {
@@ -57,29 +58,55 @@ const TextClipComponent: React.FC<{ clip: TextClip; track: Track }> = ({ clip })
           opacity = Math.min(opacity, progress);
         } else if (effect.type === 'fade-out') {
           opacity = Math.min(opacity, 1 - progress);
-        } else if (effect.type === 'slide-in' && effect.direction === 'from-bottom') {
-          const translateY = (1 - progress) * 100;
-          transform = `translate(-50%, calc(-50% + ${translateY}px))`;
+        } else if (effect.type === 'slide-in') {
+          let slideTransform = '';
+          const slideDistance = 100;
+
+          switch (effect.direction) {
+            case 'from-bottom':
+              slideTransform = ` translateY(${(1 - progress) * slideDistance}px)`;
+              break;
+            case 'from-top':
+              slideTransform = ` translateY(${-(1 - progress) * slideDistance}px)`;
+              break;
+            case 'from-left':
+              slideTransform = ` translateX(${-(1 - progress) * slideDistance}px)`;
+              break;
+            case 'from-right':
+              slideTransform = ` translateX(${(1 - progress) * slideDistance}px)`;
+              break;
+          }
+
+          transform = positionData.transform + slideTransform;
         }
       }
     });
   }
 
+  const textStyle = {
+    fontFamily: clip.style.fontFamily,
+    fontSize: clip.style.fontSize,
+    fontWeight: clip.style.fontWeight,
+    color: clip.style.color,
+    textShadow: clip.style.textShadow || '2px 2px 4px rgba(0,0,0,0.5)',
+    letterSpacing: clip.style.letterSpacing,
+    textTransform: clip.style.textTransform,
+  };
+
   return (
     <div
       style={{
         position: 'absolute',
-        top: '50%',
-        left: '50%',
+        top: positionData.top,
+        left: positionData.left,
         transform,
         opacity,
-        fontFamily: clip.style.fontFamily,
-        fontSize: clip.style.fontSize,
-        fontWeight: clip.style.fontWeight,
-        color: clip.style.color,
-        textAlign: 'center',
-        whiteSpace: 'nowrap',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+        textAlign: positionData.textAlign,
+        maxWidth: positionData.maxWidth,
+        wordBreak: positionData.wordWrap === 'break-word' ? 'break-word' : 'normal',
+        lineHeight: positionData.lineHeight,
+        whiteSpace: positionData.wordWrap === 'nowrap' ? 'nowrap' : 'normal',
+        ...textStyle,
       }}
     >
       {clip.text}

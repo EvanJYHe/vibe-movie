@@ -108,7 +108,7 @@ const TrackItem: React.FC<{ track: Track }> = ({ track }) => {
   );
 };
 
-export const TimelineViewer: React.FC<TimelineViewerProps> = ({ timeline, onTimelineUpdate }) => {
+export const TimelineViewer: React.FC<TimelineViewerProps> = ({ timeline }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const totalDuration = calculateTotalDuration(timeline);
   const totalSeconds = Math.round(totalDuration / timeline.project.fps * 10) / 10;

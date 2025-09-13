@@ -10,11 +10,31 @@ export interface Effect {
   direction?: 'from-bottom' | 'from-top' | 'from-left' | 'from-right';
 }
 
+export type PositionUnit = 'px' | '%' | 'vw' | 'vh';
+
+export interface Position {
+  x: number;
+  y: number;
+  unit?: PositionUnit;
+  anchor?: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+}
+
+export interface Layout {
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
+  maxWidth?: number;
+  maxWidthUnit?: PositionUnit;
+  wordWrap?: 'normal' | 'break-word' | 'nowrap';
+  lineHeight?: number;
+}
+
 export interface TextStyle {
   fontFamily: string;
   fontSize: number;
   fontWeight: string;
   color: string;
+  textShadow?: string;
+  letterSpacing?: number;
+  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 }
 
 export interface BaseClip {
@@ -31,6 +51,8 @@ export interface VideoClip extends BaseClip {
 export interface TextClip extends BaseClip {
   text: string;
   style: TextStyle;
+  position?: Position;
+  layout?: Layout;
 }
 
 export type Clip = VideoClip | TextClip;
