@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import type {
   VideoTimeline,
   RemotionTrack,
@@ -9,9 +8,6 @@ import type {
   Clip as TimelineClip,
   MediaAsset
 } from '../types/timeline';
-=======
-import type { VideoTimeline, Track, Clip } from '../types/timeline';
->>>>>>> better-prompting
 
 /**
  * Calculate the total duration of the video timeline in frames
@@ -54,11 +50,7 @@ export const getActiveClipsAtFrame = (timeline: VideoTimeline, frame: number): {
 /**
  * Calculate the local frame within a clip (0-based)
  */
-<<<<<<< HEAD
 export const getClipLocalFrame = (clip: RemotionClip | { startInFrames: number }, globalFrame: number): number => {
-=======
-export const getClipLocalFrame = (clip: Clip, globalFrame: number): number => {
->>>>>>> better-prompting
   return globalFrame - clip.startInFrames;
 };
 
@@ -96,7 +88,6 @@ export const getEffectProgress = (effect: any, localFrame: number, clipDuration:
     default:
       return 1;
   }
-<<<<<<< HEAD
 };
 
 /**
@@ -186,6 +177,4 @@ export const convertTimelineToRemotionFormat = (
     },
     timeline: remotionTracks,
   };
-=======
->>>>>>> better-prompting
 };

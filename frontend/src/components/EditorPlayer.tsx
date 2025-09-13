@@ -2,19 +2,10 @@ import { Player } from '@remotion/player';
 import { VideoComposition } from '../remotion/VideoComposition';
 import type { VideoTimeline } from '../types/timeline';
 import { calculateTotalDuration } from '../utils/timeline';
-<<<<<<< HEAD
 import timelineData from '../data/timeline.json';
 
 export const EditorPlayer: React.FC = () => {
   const timeline: VideoTimeline = timelineData as VideoTimeline;
-=======
-
-interface EditorPlayerProps {
-  timeline: VideoTimeline;
-}
-
-export const EditorPlayer: React.FC<EditorPlayerProps> = ({ timeline }) => {
->>>>>>> better-prompting
   const totalDuration = calculateTotalDuration(timeline);
 
   return (
