@@ -61,7 +61,7 @@ export const Clip: React.FC<ClipProps> = ({ clip, trackId }) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "Delete" && clip.selected) {
+      if ((e.key === "Delete" || e.key === "Backspace") && clip.selected) {
         removeClip(clip.id);
       }
     },

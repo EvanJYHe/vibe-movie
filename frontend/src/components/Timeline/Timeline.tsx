@@ -105,7 +105,7 @@ export const Timeline: React.FC = () => {
   }, [moveClip, addClipFromAsset, pixelsPerSecond, snapToGrid, gridSize]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Delete' && selectedClipIds.length > 0) {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedClipIds.length > 0) {
       selectedClipIds.forEach(clipId => removeClip(clipId));
     } else if (e.key === ' ' && e.target === document.body) {
       e.preventDefault();
