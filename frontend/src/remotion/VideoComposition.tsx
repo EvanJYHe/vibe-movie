@@ -33,7 +33,8 @@ const VideoClipComponent: React.FC<{ clip: RemotionVideoClip; track: RemotionTra
       <Video
         src={clip.assetUrl}
         style={{ width: '100%', height: '100%' }}
-        startFrom={0}
+        startFrom={clip.sourceIn || 0}
+        endAt={clip.sourceOut}
         onError={handleVideoError}
         muted={true}
       />

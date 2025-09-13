@@ -115,6 +115,8 @@ export const convertTimelineToRemotionFormat = (
             assetUrl,
             startInFrames: Math.floor(clip.startTime * fps),
             durationInFrames: Math.floor(clip.duration * fps),
+            sourceIn: Math.floor(clip.trimStart * fps), // Convert trim start to frames
+            sourceOut: Math.floor((clip.trimStart + clip.duration) * fps), // Convert trim end to frames
             effects: clip.effects,
             scale: clip.scale,
             position: clip.position,

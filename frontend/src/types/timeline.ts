@@ -113,6 +113,8 @@ export interface RemotionVideoClip {
   assetUrl: string;
   startInFrames: number;
   durationInFrames: number;
+  sourceIn?: number; // Start frame within the source video (for trimming)
+  sourceOut?: number; // End frame within the source video (for trimming)
   effects?: Effect[];
   scale?: number;
   position?: { x: number; y: number };
