@@ -5,6 +5,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
 require('dotenv').config();
 
+const { exportVideo } = require('./export.js');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -109,6 +111,33 @@ Be concise and always include JSON if modifying timeline.`;
     });
   } finally {
     if (videoPath) cleanupFile(videoPath);
+  }
+});
+
+app.post('/api/export', async (req, res) => {
+  try {
+    const { timeline } = req.body;
+    if (!timeline) {
+      return res.status(400).json({ error: 'Timeline data is required.' });
+    }
+
+    const videoPath = await exportVideo(timeline);
+
+    res.download(videoPath, (err) => {
+      if (err) {
+        console.error('Error sending file to client:', err);
+      }
+      
+      try {
+        fs.unlinkSync(videoPath);
+      } catch (e) {
+        console.error('Error cleaning up exported video:', e.message);
+      }
+    });
+
+  } catch (error) {
+    console.error('Export error:', error.message);
+    res.status(500).json({ error: 'Failed to export video. Check server logs for details.' });
   }
 });
 
