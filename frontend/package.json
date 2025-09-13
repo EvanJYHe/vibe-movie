@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@remotion/bundler": "^4.0.347",
+    "@remotion/cli": "^4.0.347",
+    "@remotion/player": "^4.0.347",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

@@ -1,0 +1,46 @@
+{
+  "project": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "timeline": [
+    {
+      "id": "track-1",
+      "type": "video",
+      "clips": [
+        {
+          "id": "video-clip-1",
+          "assetUrl": "https://remotion.s3.eu-central-1.amazonaws.com/assets/conference.mp4",
+          "startInFrames": 0,
+          "durationInFrames": 300,
+          "effects": [
+            { "type": "fade-in", "durationInFrames": 30 },
+            { "type": "fade-out", "durationInFrames": 30 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-2",
+      "type": "text",
+      "clips": [
+        {
+          "id": "text-clip-1",
+          "text": "Hello, Remotion!",
+          "startInFrames": 60,
+          "durationInFrames": 180,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 80,
+            "fontWeight": "bold",
+            "color": "#FFFFFF"
+          },
+          "effects": [
+            { "type": "slide-in", "direction": "from-bottom", "durationInFrames": 20 }
+          ]
+        }
+      ]
+    }
+  ]
+}
