@@ -11,7 +11,7 @@
       "clips": [
         {
           "id": "video-clip-1",
-          "assetUrl": "https://remotion.s3.eu-central-1.amazonaws.com/assets/conference.mp4",
+          "assetUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
           "startInFrames": 0,
           "durationInFrames": 300,
           "effects": [
