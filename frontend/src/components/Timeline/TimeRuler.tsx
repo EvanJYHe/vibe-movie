@@ -1,0 +1,48 @@
+import React, { useMemo } from 'react';
+import { useTimelineStore } from '../../stores/timelineStore';
+
+export const TimeRuler: React.FC = () => {
+  const { duration, pixelsPerSecond } = useTimelineStore();
+
+  console.log(`TimeRuler render: duration=${duration}, pixelsPerSecond=${pixelsPerSecond}`);
+
+  const markers = useMemo(() => {
+    const markerInterval = pixelsPerSecond < 30 ? 5 : pixelsPerSecond < 60 ? 2 : 1;
+    const markers = [];
+
+    for (let time = 0; time <= duration; time += markerInterval) {
+      markers.push({
+        time,
+        position: time * pixelsPerSecond,
+        label: formatTime(time)
+      });
+    }
+
+    console.log(`TimeRuler: Generated ${markers.length} markers for ${duration} seconds`);
+    return markers;
+  }, [duration, pixelsPerSecond]);
+
+  return (
+    <div className="time-ruler">
+      <div className="ruler-header" />
+      <div className="ruler-track" style={{ width: `${duration * pixelsPerSecond}px` }}>
+        {markers.map(marker => (
+          <div
+            key={marker.time}
+            className="time-marker"
+            style={{ left: `${marker.position}px` }}
+          >
+            <div className="marker-line" />
+            <span className="marker-label">{marker.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
