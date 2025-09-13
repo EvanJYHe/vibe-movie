@@ -80,6 +80,42 @@ Action: Update style.color to "#FF0000" for all text clips
 User: "Make text appear later"
 Action: Increase startInFrames value (30 frames = 1 second delay)
 
+## ADVANCED CLIP OPERATIONS:
+
+### Cut/Split Clip Examples:
+User: "Cut the video at 30 seconds"
+Action: Use cutClip operation to split clip at frame 900 (30 seconds × 30fps)
+
+User: "Split the first text clip in half"
+Action: Find first text clip, calculate middle point, use cutClipAt function
+
+### Trim Clip Examples:
+User: "Remove first 5 seconds from video"
+Action: Use trimClipFromStart to remove 150 frames (5 × 30fps) from beginning
+
+User: "Trim 2 seconds from the end"
+Action: Use trimClipFromEnd to remove 60 frames from clip end
+
+User: "Keep only seconds 10-20 of the clip"
+Action: Use trimClipRange to extract frames 300-600
+
+### Join/Merge Examples:
+User: "Join the first two text clips"
+Action: Use joinMultipleClips to combine clips, concatenating text content
+
+User: "Merge video clips with fade transition"
+Action: Use mergeWithCrossfade with 1-second crossfade duration
+
+### Advanced Editing Examples:
+User: "Remove seconds 15-20 from the middle of the video"
+Action: Use removeClipPortion to cut out specific segment
+
+User: "Move the text to appear at 45 seconds"
+Action: Use moveClip to reposition clip to frame 1350
+
+User: "Duplicate the title text at the end"
+Action: Use duplicateClipAt to copy clip to new timeline position
+
 ## IMPORTANT RULES:
 1. **Always include complete timeline JSON** in response
 2. **Make direct changes** - don't ask for clarification
@@ -185,6 +221,22 @@ function cleanResponseText(responseText) {
 function detectEditingOperation(userMessage) {
   const message = userMessage.toLowerCase();
 
+  // Advanced clip operations
+  if (message.includes('cut') || message.includes('split')) {
+    return 'cutClip';
+  }
+  if (message.includes('trim') || message.includes('shorten') ||
+      (message.includes('remove') && (message.includes('seconds') || message.includes('first') || message.includes('last')))) {
+    return 'trimClip';
+  }
+  if (message.includes('join') || message.includes('merge') || message.includes('combine')) {
+    return 'joinClips';
+  }
+  if (message.includes('duplicate') || message.includes('copy')) {
+    return 'duplicateClip';
+  }
+
+  // Basic operations
   if (message.includes('change') && message.includes('text')) {
     return 'changeText';
   }

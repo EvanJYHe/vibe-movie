@@ -133,7 +133,20 @@ const COMMON_OPERATIONS = {
 
   // Effects
   addFade: "Add fade-in/fade-out effects to effects array",
-  addAnimation: "Add slide-in or other transition effects"
+  addAnimation: "Add slide-in or other transition effects",
+
+  // Advanced clip operations
+  cutClip: "Split clip into two separate clips at specified frame position",
+  trimClip: "Remove frames from start, end, or middle of clip",
+  joinClips: "Combine multiple clips into single clip (same track only)",
+  mergeClips: "Join clips with crossfade transitions",
+  duplicateClip: "Create copy of clip at different timeline position",
+  removeSegment: "Delete specific time range from clip",
+
+  // Clip identification patterns
+  clipSelection: "Use clip IDs, position descriptions ('first video', 'second text'), or time references ('clip at 30 seconds')",
+  timeConversion: "Convert seconds to frames: multiply by fps (30fps: 1 second = 30 frames)",
+  frameCalculation: "Always work with frame numbers for precise timing"
 };
 
 module.exports = {
