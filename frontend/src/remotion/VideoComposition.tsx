@@ -24,12 +24,18 @@ const VideoClipComponent: React.FC<{ clip: VideoClip; track: Track }> = ({ clip 
     });
   }
 
+  const handleVideoError = (error: Error) => {
+    console.warn('Video playback error for clip:', clip.id, error.message);
+  };
+
   return (
     <div style={{ opacity }}>
       <Video
         src={clip.assetUrl}
         style={{ width: '100%', height: '100%' }}
         startFrom={0}
+        onError={handleVideoError}
+        muted={true}
       />
     </div>
   );
