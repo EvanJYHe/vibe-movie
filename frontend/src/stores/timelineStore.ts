@@ -10,6 +10,7 @@ interface TimelineStore extends TimelineState {
   getAsset: (assetId: string) => MediaAsset | undefined;
   addClip: (trackId: string, startTime: number, assetId?: string) => void;
   addClipFromAsset: (trackId: string, startTime: number, asset: MediaAsset) => void;
+  addTextClip: (trackId: string, startTime: number, text: string, duration: number) => void;
   removeClip: (clipId: string) => void;
   moveClip: (clipId: string, newTrackId: string, newStartTime: number) => void;
   trimClip: (clipId: string, side: 'start' | 'end', newTime: number) => void;
@@ -144,6 +145,37 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
         name: asset.url.split('/').pop()?.split('.')[0] || 'Clip',
         color: generateColor(),
         selected: false
+      };
+
+      return {
+        tracks: state.tracks.map(track =>
+          track.id === trackId
+            ? { ...track, clips: [...track.clips, newClip] }
+            : track
+        )
+      };
+    });
+
+    // Auto-extend timeline after adding clip
+    useTimelineStore.getState().updateTimelineDuration();
+  },
+
+  addTextClip: (trackId, startTime, text, duration) => {
+    set((state) => {
+      const newClip: Clip = {
+        id: generateId(),
+        trackId,
+        startTime,
+        duration,
+        trimStart: 0,
+        trimEnd: 0,
+        // No assetId or assetUrl for text clips
+        name: `Text: ${text.substring(0, 20)}${text.length > 20 ? '...' : ''}`,
+        color: '#FF6B6B', // Special color for text clips
+        selected: false,
+        metadata: {
+          transcript: text
+        }
       };
 
       return {

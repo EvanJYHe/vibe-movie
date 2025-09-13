@@ -111,7 +111,7 @@ export const convertTimelineToRemotionFormat = (
           if (isTextClip) {
             const remotionTextClip: RemotionTextClip = {
               id: clip.id,
-              text: clip.metadata.transcript || clip.name,
+              text: clip.metadata?.transcript || clip.name,
               style: {
                 fontFamily: 'Arial, sans-serif',
                 fontSize: 48,
