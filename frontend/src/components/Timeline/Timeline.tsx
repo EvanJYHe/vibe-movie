@@ -15,6 +15,7 @@ import { TimeRuler } from './TimeRuler';
 import { PlayHead } from './PlayHead';
 import { MediaLibrary } from './MediaLibrary';
 import { MediaUpload } from './MediaUpload';
+import { TextEditor } from './TextEditor';
 import { useTimelineStore } from '../../stores/timelineStore';
 import './Timeline.css';
 
@@ -41,6 +42,7 @@ export const Timeline: React.FC = () => {
 
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
+  const [showTextEditor, setShowTextEditor] = useState(false);
   const [dragActive, setDragActive] = useState<any>(null);
 
   const sensors = useSensors(
@@ -146,6 +148,9 @@ export const Timeline: React.FC = () => {
         <button onClick={() => setShowUpload(true)} className="toolbar-btn">
           📤 Upload Media
         </button>
+        <button onClick={() => setShowTextEditor(true)} className="toolbar-btn">
+          T Add Text
+        </button>
         <button onClick={toggleSnapToGrid} className={`toolbar-btn ${snapToGrid ? 'active' : ''}`}>
           Snap: {snapToGrid ? 'ON' : 'OFF'}
         </button>
@@ -209,6 +214,13 @@ export const Timeline: React.FC = () => {
         <MediaUpload
           onUpload={addAsset}
           onClose={() => setShowUpload(false)}
+        />
+      )}
+
+      {showTextEditor && (
+        <TextEditor
+          isOpen={showTextEditor}
+          onClose={() => setShowTextEditor(false)}
         />
       )}
     </div>
