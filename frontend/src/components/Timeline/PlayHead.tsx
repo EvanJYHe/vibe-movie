@@ -18,7 +18,7 @@ export const PlayHead: React.FC = () => {
 
       const rect = timelineElement.getBoundingClientRect();
       const scrollLeft = timelineElement.scrollLeft;
-      const x = Math.max(0, e.clientX - rect.left - 200 + scrollLeft); // Subtract track header width and add scroll offset
+      const x = Math.max(0, e.clientX - rect.left - 217 + scrollLeft); // Subtract track header width (200px + 16px padding + 1px border) and add scroll offset
       const newTime = Math.min(duration, Math.max(0, x / pixelsPerSecond));
       setPlayheadPosition(newTime);
     };
@@ -37,7 +37,7 @@ export const PlayHead: React.FC = () => {
     <motion.div
       className="playhead"
       style={{
-        left: `${200 + playheadPosition * pixelsPerSecond}px`
+        left: `${217 + playheadPosition * pixelsPerSecond}px`
       }}
       onMouseDown={handleMouseDown}
       whileHover={{ scale: 1.1 }}

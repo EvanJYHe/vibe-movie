@@ -101,6 +101,7 @@
 
 .ruler-header {
   width: 200px;
+  padding: 8px;
   background: #252525;
   border-right: 1px solid #3a3a3a;
   flex-shrink: 0;
@@ -251,13 +252,9 @@
   border-radius: 4px;
   overflow: hidden;
   cursor: move;
-  transition: transform 0.1s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.clip:hover {
-  z-index: 2;
-}
 
 .clip.selected {
   outline: 2px solid #0099ff;

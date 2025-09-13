@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useTimelineStore } from '../../stores/timelineStore';
 
 export const TimeRuler: React.FC = () => {
-  const { duration, pixelsPerSecond } = useTimelineStore();
+  const { duration, pixelsPerSecond, setPlayheadPosition } = useTimelineStore();
 
   console.log(`TimeRuler render: duration=${duration}, pixelsPerSecond=${pixelsPerSecond}`);
 
@@ -22,10 +22,22 @@ export const TimeRuler: React.FC = () => {
     return markers;
   }, [duration, pixelsPerSecond]);
 
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    const rulerTrack = e.currentTarget as HTMLElement;
+    const rect = rulerTrack.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const newTime = Math.min(duration, Math.max(0, x / pixelsPerSecond));
+    setPlayheadPosition(newTime);
+  }, [duration, pixelsPerSecond, setPlayheadPosition]);
+
   return (
     <div className="time-ruler">
       <div className="ruler-header" />
-      <div className="ruler-track" style={{ width: `${duration * pixelsPerSecond}px` }}>
+      <div
+        className="ruler-track"
+        style={{ width: `${duration * pixelsPerSecond}px`, cursor: 'pointer' }}
+        onClick={handleClick}
+      >
         {markers.map(marker => (
           <div
             key={marker.time}
