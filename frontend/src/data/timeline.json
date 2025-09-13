@@ -15,8 +15,8 @@
           "startInFrames": 0,
           "durationInFrames": 300,
           "effects": [
-            { "type": "fade-in", "durationInFrames": 30 },
-            { "type": "fade-out", "durationInFrames": 30 }
+            { "type": "fade-in", "durationInFrames": 0 },
+            { "type": "fade-out", "durationInFrames": 0 }
           ]
         }
       ]
@@ -27,17 +27,50 @@
       "clips": [
         {
           "id": "text-clip-1",
-          "text": "Hello, Remotion!",
-          "startInFrames": 60,
-          "durationInFrames": 180,
+          "text": "Welcome to Vibe Movie",
+          "startInFrames": 30,
+          "durationInFrames": 90,
           "style": {
             "fontFamily": "Arial, sans-serif",
-            "fontSize": 80,
+            "fontSize": 72,
             "fontWeight": "bold",
             "color": "#FFFFFF"
           },
           "effects": [
-            { "type": "slide-in", "direction": "from-bottom", "durationInFrames": 20 }
+            { "type": "fade-in", "durationInFrames": 15 },
+            { "type": "fade-out", "durationInFrames": 15 }
+          ]
+        },
+        {
+          "id": "text-clip-2",
+          "text": "AI-Powered Video Editor",
+          "startInFrames": 30,
+          "durationInFrames": 90,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 48,
+            "fontWeight": "normal",
+            "color": "#FFD700"
+          },
+          "effects": [
+            { "type": "slide-in", "direction": "from-bottom", "durationInFrames": 20 },
+            { "type": "fade-out", "durationInFrames": 15 }
+          ]
+        },
+        {
+          "id": "text-clip-3",
+          "text": "Create Amazing Videos",
+          "startInFrames": 20,
+          "durationInFrames": 200,
+          "style": {
+            "fontFamily": "Arial, sans-serif",
+            "fontSize": 56,
+            "fontWeight": "bold",
+            "color": "#00FF88"
+          },
+          "effects": [
+            { "type": "fade-in", "durationInFrames": 20 },
+            { "type": "fade-out", "durationInFrames": 20 }
           ]
         }
       ]

@@ -1,15 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditorPlayer } from './components/EditorPlayer';
 import { ChatPanel } from './components/ChatPanel';
+import { TimelineViewer } from './components/TimelineViewer';
 import type { VideoTimeline } from './types/timeline';
 import timelineData from './data/timeline.json';
+import { timelineStorage } from './utils/timelineStorage';
 
 function App() {
-  const [timeline, setTimeline] = useState<VideoTimeline>(timelineData as VideoTimeline);
+  // Load timeline from localStorage if available, otherwise use default
+  const [timeline, setTimeline] = useState<VideoTimeline>(() => {
+    const storedTimeline = timelineStorage.loadTimeline();
+    return storedTimeline || (timelineData as VideoTimeline);
+  });
 
   const handleTimelineUpdate = (newTimeline: VideoTimeline) => {
     setTimeline(newTimeline);
+    // Persist timeline to localStorage whenever it's updated
+    timelineStorage.saveTimeline(newTimeline);
   };
+
+  // Save initial timeline if none was stored
+  useEffect(() => {
+    if (!timelineStorage.hasStoredTimeline()) {
+      timelineStorage.saveTimeline(timeline);
+    }
+  }, []);
 
   return (
     <div style={{
@@ -37,6 +52,7 @@ function App() {
           Vibe Movie Editor
         </h1>
         <EditorPlayer timeline={timeline} />
+        <TimelineViewer timeline={timeline} onTimelineUpdate={handleTimelineUpdate} />
       </div>
       <ChatPanel timeline={timeline} onTimelineUpdate={handleTimelineUpdate} />
     </div>
