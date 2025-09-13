@@ -3,6 +3,7 @@ import type {
   RemotionTrack,
   RemotionClip,
   RemotionVideoClip,
+  RemotionTextClip,
   Track as TimelineTrack,
   Clip as TimelineClip,
   MediaAsset
@@ -102,35 +103,68 @@ export const convertTimelineToRemotionFormat = (
     .filter(track => track.clips.length > 0)
     .map(track => {
       const clips: RemotionClip[] = track.clips
-        .filter(clip => clip.assetUrl || clip.assetId)
+        .filter(clip => clip.assetUrl || clip.assetId || clip.metadata?.transcript)
         .map(clip => {
-          // Get asset details if available
-          const asset = clip.assetId ? assets.find(a => a.id === clip.assetId) : null;
-          const assetUrl = clip.assetUrl || asset?.url;
+          // Check if this is a text clip (has transcript but no asset)
+          const isTextClip = clip.metadata?.transcript && !clip.assetUrl && !clip.assetId;
 
-          if (!assetUrl) return null;
+          if (isTextClip) {
+            const remotionTextClip: RemotionTextClip = {
+              id: clip.id,
+              text: clip.metadata.transcript || clip.name,
+              style: {
+                fontFamily: 'Arial, sans-serif',
+                fontSize: 48,
+                fontWeight: 'bold',
+                color: 'white',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+              },
+              startInFrames: Math.floor(clip.startTime * fps),
+              durationInFrames: Math.floor(clip.duration * fps),
+              effects: clip.effects,
+              position: clip.position || { x: 50, y: 50, unit: '%' },
+            };
+            return remotionTextClip;
+          } else {
+            // Get asset details if available
+            const asset = clip.assetId ? assets.find(a => a.id === clip.assetId) : null;
+            const assetUrl = clip.assetUrl || asset?.url;
 
-          const remotionClip: RemotionVideoClip = {
-            id: clip.id,
-            assetUrl,
-            startInFrames: Math.floor(clip.startTime * fps),
-            durationInFrames: Math.floor(clip.duration * fps),
-            sourceIn: Math.floor(clip.trimStart * fps), // Convert trim start to frames
-            sourceOut: Math.floor((clip.trimStart + clip.duration) * fps), // Convert trim end to frames
-            effects: clip.effects,
-            scale: clip.scale,
-            position: clip.position,
-            rotation: clip.rotation,
-            opacity: clip.opacity,
-          };
+            if (!assetUrl) return null;
 
-          return remotionClip;
+            const remotionClip: RemotionVideoClip = {
+              id: clip.id,
+              assetUrl,
+              startInFrames: Math.floor(clip.startTime * fps),
+              durationInFrames: Math.floor(clip.duration * fps),
+              sourceIn: Math.floor(clip.trimStart * fps), // Convert trim start to frames
+              sourceOut: Math.floor((clip.trimStart + clip.duration) * fps), // Convert trim end to frames
+              effects: clip.effects,
+              scale: clip.scale,
+              position: clip.position,
+              rotation: clip.rotation,
+              opacity: clip.opacity,
+            };
+
+            return remotionClip;
+          }
         })
         .filter((clip): clip is RemotionClip => clip !== null);
 
+      // Determine track type based on clips content
+      const hasTextClips = track.clips.some(clip => clip.metadata?.transcript && !clip.assetUrl && !clip.assetId);
+      const hasVideoClips = track.clips.some(clip => clip.assetUrl || clip.assetId);
+
+      let trackType: 'video' | 'text' = 'video';
+      if (hasTextClips && !hasVideoClips) {
+        trackType = 'text';
+      } else if (track.type) {
+        trackType = track.type as 'video' | 'text';
+      }
+
       return {
         id: track.id,
-        type: 'video' as const,
+        type: trackType,
         clips,
       };
     });

@@ -15,6 +15,7 @@ export interface ChatApiRequest {
 export interface ChatApiResponse {
   id: string;
   content: string;
+  timeline?: any; // VideoTimeline from backend
 }
 
 export interface ChatError {

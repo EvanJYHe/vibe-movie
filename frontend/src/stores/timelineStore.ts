@@ -22,6 +22,7 @@ interface TimelineStore extends TimelineState {
   updateTrack: (trackId: string, updates: Partial<Track>) => void;
   updateClip: (clipId: string, updates: Partial<Clip>) => void;
   updateTimelineDuration: () => void;
+  loadTimelineFromAI: (aiTimeline: any) => void;
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -336,5 +337,76 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
     }
 
     return state;
+  }),
+
+  loadTimelineFromAI: (aiTimeline) => set((state) => {
+    try {
+      // Convert AI timeline format to our timeline format
+      if (!aiTimeline?.timeline || !Array.isArray(aiTimeline.timeline)) {
+        console.warn('Invalid AI timeline format:', aiTimeline);
+        return state;
+      }
+
+      const newTracks: Track[] = aiTimeline.timeline.map((aiTrack: any, index: number) => {
+        const trackId = `ai-track-${index + 1}`;
+
+        const clips: Clip[] = (aiTrack.clips || []).map((aiClip: any) => {
+          // Convert frame-based to time-based (assuming 30 fps)
+          const fps = aiTimeline.project?.fps || 30;
+          const startTime = (aiClip.startInFrames || 0) / fps;
+          const duration = (aiClip.durationInFrames || 0) / fps;
+
+          return {
+            id: aiClip.id || generateId(),
+            trackId,
+            startTime,
+            duration,
+            trimStart: 0,
+            trimEnd: 0,
+            assetId: undefined,
+            assetUrl: aiClip.assetUrl,
+            name: aiClip.text || aiClip.assetUrl?.split('/').pop()?.split('.')[0] || 'AI Clip',
+            color: generateColor(),
+            selected: false,
+            // Copy AI properties
+            scale: aiClip.scale,
+            position: aiClip.position,
+            rotation: aiClip.rotation,
+            opacity: aiClip.opacity,
+            volume: aiClip.volume,
+            muted: aiClip.muted,
+            metadata: {
+              transcript: aiClip.text,
+              scene: aiClip.scene,
+              tags: aiClip.tags
+            },
+            effects: aiClip.effects
+          };
+        });
+
+        return {
+          id: trackId,
+          name: `AI Track ${index + 1}`,
+          height: 80,
+          muted: false,
+          locked: false,
+          color: generateColor(),
+          clips,
+          type: aiTrack.type
+        };
+      });
+
+      console.log('Loading AI timeline with tracks:', newTracks);
+
+      // Replace current tracks with AI tracks
+      return {
+        tracks: newTracks,
+        selectedClipIds: [],
+        playheadPosition: 0
+      };
+    } catch (error) {
+      console.error('Error loading AI timeline:', error);
+      return state;
+    }
   })
 }));

@@ -1,29 +1,38 @@
-import type { ChatApiRequest, ChatApiResponse, ChatError, ChatMessage } from '../types/chat';
-import type { VideoTimeline } from '../types/timeline';
+import type {
+  ChatApiRequest,
+  ChatApiResponse,
+  ChatError,
+  ChatMessage,
+} from "../types/chat";
+import type { VideoTimeline } from "../types/timeline";
 
-const CHAT_ENDPOINT = '/api/chat';
+const CHAT_ENDPOINT = "/api/chat";
 
 class ChatApiClient {
   private baseUrl: string;
 
-  constructor(baseUrl = '') {
+  constructor(baseUrl = "") {
     this.baseUrl = baseUrl;
   }
 
-  async sendMessage(messages: ChatMessage[], timeline?: VideoTimeline, videoFile?: File): Promise<ChatApiResponse> {
+  async sendMessage(
+    messages: ChatMessage[],
+    timeline?: VideoTimeline,
+    videoFile?: File
+  ): Promise<ChatApiResponse> {
     try {
       const formData = new FormData();
-      formData.append('messages', JSON.stringify(messages));
+      formData.append("messages", JSON.stringify(messages));
       if (timeline) {
-        formData.append('timeline', JSON.stringify(timeline));
+        formData.append("timeline", JSON.stringify(timeline));
       }
       if (videoFile) {
-        formData.append('video', videoFile);
+        formData.append("video", videoFile);
       }
 
       const response = await fetch(`${this.baseUrl}${CHAT_ENDPOINT}`, {
-        method: 'POST',
-        body: formData
+        method: "POST",
+        body: formData,
       });
 
       if (!response.ok) {
@@ -31,9 +40,17 @@ class ChatApiClient {
       }
 
       const data: ChatApiResponse = await response.json();
+      console.log(data);
 
       if (!data.id || !data.content) {
-        throw new Error('Invalid response format from chat API');
+        throw new Error("Invalid response format from chat API");
+      }
+
+      // If AI returned a timeline, load it into the timeline store
+      if (data.timeline) {
+        const { useTimelineStore } = await import('../stores/timelineStore');
+        useTimelineStore.getState().loadTimelineFromAI(data.timeline);
+        console.log('AI timeline loaded into store');
       }
 
       return data;
@@ -41,14 +58,16 @@ class ChatApiClient {
       if (error instanceof Error) {
         throw this.createChatError(error.message);
       }
-      throw this.createChatError('An unexpected error occurred');
+      throw this.createChatError("An unexpected error occurred");
     }
   }
 
   private async handleErrorResponse(response: Response): Promise<string> {
     try {
       const errorData = await response.json();
-      return errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+      return (
+        errorData.message || `HTTP ${response.status}: ${response.statusText}`
+      );
     } catch {
       return `HTTP ${response.status}: ${response.statusText}`;
     }
@@ -58,7 +77,7 @@ class ChatApiClient {
     return {
       message,
       statusCode,
-      code: statusCode ? `HTTP_${statusCode}` : 'API_ERROR'
+      code: statusCode ? `HTTP_${statusCode}` : "API_ERROR",
     };
   }
 
