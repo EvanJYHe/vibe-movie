@@ -100,11 +100,31 @@ export interface Effect {
   direction?: 'from-bottom' | 'from-top' | 'from-left' | 'from-right';
 }
 
+export type PositionUnit = 'px' | '%' | 'vw' | 'vh';
+
+export interface Position {
+  x: number;
+  y: number;
+  unit?: PositionUnit;
+  anchor?: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+}
+
+export interface Layout {
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
+  maxWidth?: number;
+  maxWidthUnit?: PositionUnit;
+  wordWrap?: 'normal' | 'break-word' | 'nowrap';
+  lineHeight?: number;
+}
+
 export interface TextStyle {
   fontFamily: string;
   fontSize: number;
   fontWeight: string;
   color: string;
+  textShadow?: string;
+  letterSpacing?: number;
+  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 }
 
 // Remotion clip types (converted from timeline Clip)
@@ -129,9 +149,30 @@ export interface RemotionTextClip {
   startInFrames: number;
   durationInFrames: number;
   effects?: Effect[];
+  position?: Position;
+  layout?: Layout;
 }
 
 export type RemotionClip = RemotionVideoClip | RemotionTextClip;
+
+// Alternative clip types for better-prompting compatibility
+export interface BaseClip {
+  id: string;
+  startInFrames: number;
+  durationInFrames: number;
+  effects?: Effect[];
+}
+
+export interface VideoClip extends BaseClip {
+  assetUrl: string;
+}
+
+export interface TextClip extends BaseClip {
+  text: string;
+  style: TextStyle;
+  position?: Position;
+  layout?: Layout;
+}
 
 export interface RemotionTrack {
   id: string;

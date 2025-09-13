@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { ChatMessage, ChatError } from '../types/chat';
 import { chatApi } from '../services/chatApi';
 import { chatStorage } from '../utils/chatStorage';
+import { useTimelineStore } from '../stores/timelineStore';
+import { convertTimelineToRemotionFormat } from '../utils/timeline';
 
 // Generate unique IDs for messages
 const generateId = () => `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -169,6 +171,10 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
   const [inputValue, setInputValue] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+
+  // Get timeline data from store
+  const { tracks, assets } = useTimelineStore();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -220,7 +226,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
     setIsLoading(true);
 
     try {
-      const response = await chatApi.sendMessage(newMessages);
+      // Convert current timeline to Remotion format for AI context
+      const timeline = convertTimelineToRemotionFormat(tracks, assets);
+      const response = await chatApi.sendMessage(newMessages, timeline, videoFile || undefined);
 
       const assistantMessage: ChatMessage = {
         id: response.id,
@@ -232,6 +240,17 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
       const finalMessages = [...newMessages, assistantMessage];
       setMessages(finalMessages);
       saveMessages(finalMessages);
+
+      // Handle timeline updates from AI
+      if (response.timeline) {
+        // TODO: Apply timeline updates to the store
+        console.log('Received timeline update from AI:', response.timeline);
+      }
+
+      // Clear video file after sending
+      if (videoFile) {
+        setVideoFile(null);
+      }
     } catch (err) {
       console.error('Chat API error:', err);
       setError(err as ChatError);
@@ -391,6 +410,37 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
           borderTop: '1px solid #3a3a3a',
         }}
       >
+        {/* Video file display */}
+        {videoFile && (
+          <div style={{
+            marginBottom: '12px',
+            padding: '8px 12px',
+            backgroundColor: '#1a1a1a',
+            border: '1px solid #3a3a3a',
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span style={{ fontSize: '14px', color: '#e0e0e0', flex: 1 }}>
+              📹 {videoFile.name}
+            </span>
+            <button
+              onClick={() => setVideoFile(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#666',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+              title="Remove video"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
           <textarea
             ref={inputRef}
@@ -415,6 +465,31 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
             }}
             aria-label="Chat message input"
           />
+          <input
+            type="file"
+            accept="video/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) setVideoFile(file);
+            }}
+            style={{ display: 'none' }}
+            id="video-upload"
+          />
+          <button
+            onClick={() => document.getElementById('video-upload')?.click()}
+            style={{
+              padding: '8px',
+              border: '1px solid #3a3a3a',
+              borderRadius: '6px',
+              backgroundColor: videoFile ? '#0066cc' : '#2a2a2a',
+              color: videoFile ? 'white' : '#e0e0e0',
+              cursor: 'pointer',
+              fontSize: '16px',
+            }}
+            title="Upload video for analysis"
+          >
+            📹
+          </button>
           <button
             onClick={() => handleSendMessage()}
             disabled={!canSend}

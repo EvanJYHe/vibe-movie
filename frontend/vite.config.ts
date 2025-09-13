@@ -11,4 +11,13 @@ export default defineConfig({
     global: 'globalThis',
   },
   assetsInclude: ['**/*.mp4', '**/*.mov', '**/*.avi'],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })

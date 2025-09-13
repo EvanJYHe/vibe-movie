@@ -1,6 +1,7 @@
 import type { ChatApiRequest, ChatApiResponse, ChatError, ChatMessage } from '../types/chat';
+import type { VideoTimeline } from '../types/timeline';
 
-const CHAT_ENDPOINT = '/chat';
+const CHAT_ENDPOINT = '/api/chat';
 
 class ChatApiClient {
   private baseUrl: string;
@@ -9,18 +10,20 @@ class ChatApiClient {
     this.baseUrl = baseUrl;
   }
 
-  async sendMessage(messages: ChatMessage[]): Promise<ChatApiResponse> {
+  async sendMessage(messages: ChatMessage[], timeline?: VideoTimeline, videoFile?: File): Promise<ChatApiResponse> {
     try {
+      const formData = new FormData();
+      formData.append('messages', JSON.stringify(messages));
+      if (timeline) {
+        formData.append('timeline', JSON.stringify(timeline));
+      }
+      if (videoFile) {
+        formData.append('video', videoFile);
+      }
+
       const response = await fetch(`${this.baseUrl}${CHAT_ENDPOINT}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add bearer token if available
-          ...(this.getBearerToken() && {
-            'Authorization': `Bearer ${this.getBearerToken()}`
-          })
-        },
-        body: JSON.stringify({ messages } as ChatApiRequest)
+        body: formData
       });
 
       if (!response.ok) {
