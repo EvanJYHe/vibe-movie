@@ -1,0 +1,11 @@
+# Backend-specific files
+uploads/*
+!uploads/.gitkeep
+
+# Node.js specific
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+jspm_packages/

@@ -1,73 +1,34 @@
-import type { ChatApiRequest, ChatApiResponse, ChatError, ChatMessage } from '../types/chat';
+import type { ChatApiResponse, ChatError, ChatMessage } from '../types/chat';
+import type { VideoTimeline } from '../types/timeline';
 
-const CHAT_ENDPOINT = '/chat';
+const API_URL = 'http://localhost:3001/api/chat';
 
-class ChatApiClient {
-  private baseUrl: string;
+async function sendMessage(
+  messages: ChatMessage[],
+  timeline?: VideoTimeline
+): Promise<ChatApiResponse> {
+  const formData = new FormData();
+  formData.append('messages', JSON.stringify(messages));
 
-  constructor(baseUrl = '') {
-    this.baseUrl = baseUrl;
+  if (timeline) {
+    formData.append('timeline', JSON.stringify(timeline));
   }
 
-  async sendMessage(messages: ChatMessage[]): Promise<ChatApiResponse> {
-    try {
-      const response = await fetch(`${this.baseUrl}${CHAT_ENDPOINT}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add bearer token if available
-          ...(this.getBearerToken() && {
-            'Authorization': `Bearer ${this.getBearerToken()}`
-          })
-        },
-        body: JSON.stringify({ messages } as ChatApiRequest)
-      });
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    body: formData,
+  });
 
-      if (!response.ok) {
-        throw new Error(await this.handleErrorResponse(response));
-      }
-
-      const data: ChatApiResponse = await response.json();
-
-      if (!data.id || !data.content) {
-        throw new Error('Invalid response format from chat API');
-      }
-
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw this.createChatError(error.message);
-      }
-      throw this.createChatError('An unexpected error occurred');
-    }
-  }
-
-  private async handleErrorResponse(response: Response): Promise<string> {
-    try {
-      const errorData = await response.json();
-      return errorData.message || `HTTP ${response.status}: ${response.statusText}`;
-    } catch {
-      return `HTTP ${response.status}: ${response.statusText}`;
-    }
-  }
-
-  private createChatError(message: string, statusCode?: number): ChatError {
-    return {
-      message,
-      statusCode,
-      code: statusCode ? `HTTP_${statusCode}` : 'API_ERROR'
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+    const error: ChatError = {
+      message: errorData.message || `HTTP ${response.status}`,
+      code: 'API_ERROR'
     };
+    throw error;
   }
 
-  private getBearerToken(): string | null {
-    // For MVP, just return null - auth can be added later
-    // Could check localStorage, cookies, or environment variables
-    return null;
-  }
+  return response.json();
 }
 
-// Export singleton instance
-export const chatApi = new ChatApiClient();
-
-// Export class for testing or custom instances
-export { ChatApiClient };
+export const chatApi = { sendMessage };

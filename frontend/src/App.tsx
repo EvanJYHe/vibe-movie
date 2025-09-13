@@ -1,7 +1,16 @@
+import { useState } from 'react';
 import { EditorPlayer } from './components/EditorPlayer';
 import { ChatPanel } from './components/ChatPanel';
+import type { VideoTimeline } from './types/timeline';
+import timelineData from './data/timeline.json';
 
 function App() {
+  const [timeline, setTimeline] = useState<VideoTimeline>(timelineData as VideoTimeline);
+
+  const handleTimelineUpdate = (newTimeline: VideoTimeline) => {
+    setTimeline(newTimeline);
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -27,9 +36,9 @@ function App() {
         }}>
           Vibe Movie Editor
         </h1>
-        <EditorPlayer />
+        <EditorPlayer timeline={timeline} />
       </div>
-      <ChatPanel />
+      <ChatPanel timeline={timeline} onTimelineUpdate={handleTimelineUpdate} />
     </div>
   );
 }
