@@ -3,6 +3,7 @@ const cors = require('cors');
 const multer = require('multer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
+const { generatePrompt, parseTimelineFromResponse, cleanResponseText } = require('./prompts/geminiPrompts');
 require('dotenv').config();
 
 const app = express();
@@ -40,14 +41,7 @@ const fileToGenerativePart = (path, mimeType) => ({
   }
 });
 
-const parseTimelineFromResponse = (text) => {
-  try {
-    const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/"timeline":\s*({[\s\S]*?})/);
-    return jsonMatch ? JSON.parse(jsonMatch[1]) : null;
-  } catch (e) {
-    return null;
-  }
-};
+// parseTimelineFromResponse moved to prompts/geminiPrompts.js
 
 app.post('/api/chat', upload.single('video'), async (req, res) => {
   let videoPath = null;
@@ -64,19 +58,9 @@ app.post('/api/chat', upload.single('video'), async (req, res) => {
     const userMessage = parsedMessages[parsedMessages.length - 1].content;
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
-    let prompt = `You are an AI video editor assistant. User request: "${userMessage}"
-
-Current timeline: ${JSON.stringify(parsedTimeline)}
-
-For timeline modifications, provide:
-1. Brief explanation of changes
-2. JSON code block with updated timeline like:
-
-\`\`\`json
-{"project":{"width":1920,"height":1080,"fps":30},"timeline":[{"id":"track-1","type":"video","clips":[]},{"id":"track-2","type":"text","clips":[{"id":"text-1","text":"Welcome","startInFrames":0,"durationInFrames":90,"style":{"color":"white","fontSize":48}}]}]}
-\`\`\`
-
-Be concise and always include JSON if modifying timeline.`;
+    // Generate enhanced prompt with Remotion knowledge
+    const hasVideo = !!req.file;
+    const prompt = generatePrompt(userMessage, parsedTimeline, hasVideo);
 
     let inputs = [prompt];
 
@@ -92,7 +76,7 @@ Be concise and always include JSON if modifying timeline.`;
 
     const response = {
       id: generateId(),
-      content: responseText.replace(/```json[\s\S]*?```/g, '').trim(),
+      content: cleanResponseText(responseText),
       timestamp: new Date().toISOString()
     };
 
