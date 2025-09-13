@@ -1,6 +1,11 @@
 # Backend-specific files
 uploads/*
 !uploads/.gitkeep
+exports/*
+!exports/.gitkeep
+temp-assets/*
+!temp-assets/.gitkeep
+temp-entry.js
 
 # Node.js specific
 .npm

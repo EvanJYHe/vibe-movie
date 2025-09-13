@@ -6,15 +6,24 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-  closestCenter,
   rectIntersection
 } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
+
+interface DragData {
+  clip?: any;
+  asset?: any;
+}
+
+interface TrackData {
+  track?: any;
+}
 import { Track } from './Track';
 import { TimeRuler } from './TimeRuler';
 import { PlayHead } from './PlayHead';
 import { MediaLibrary } from './MediaLibrary';
 import { MediaUpload } from './MediaUpload';
+import { ExportButton } from './ExportButton';
 import { useTimelineStore } from '../../stores/timelineStore';
 import './Timeline.css';
 
@@ -41,7 +50,7 @@ export const Timeline: React.FC = () => {
 
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
-  const [dragActive, setDragActive] = useState<any>(null);
+  const [dragActive, setDragActive] = useState<DragData | null>(null);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -52,7 +61,7 @@ export const Timeline: React.FC = () => {
     useSensor(TouchSensor)
   );
 
-  const handleDragStart = useCallback((event: any) => {
+  const handleDragStart = useCallback((event: { active: { data: { current: DragData } } }) => {
     console.log('Drag start:', event.active.data.current);
     setDragActive(event.active.data.current);
   }, []);
@@ -68,8 +77,8 @@ export const Timeline: React.FC = () => {
       return;
     }
 
-    const activeData = active.data.current as any;
-    const trackData = over.data.current as any;
+    const activeData = active.data.current as DragData;
+    const trackData = over.data.current as TrackData;
 
     // Handle dragging clips within timeline
     if (activeData?.clip && trackData?.track) {
@@ -149,6 +158,7 @@ export const Timeline: React.FC = () => {
         <button onClick={toggleSnapToGrid} className={`toolbar-btn ${snapToGrid ? 'active' : ''}`}>
           Snap: {snapToGrid ? 'ON' : 'OFF'}
         </button>
+        <ExportButton />
         <div className="zoom-controls">
           <button onClick={() => setZoom(zoom / 1.2)} className="toolbar-btn">
             -
