@@ -228,11 +228,17 @@ export const useTimelineStore = create<TimelineStore>()(
   moveClip: (clipId, newTrackId, newStartTime) => {
     set((state) => {
       let clipToMove: Clip | undefined;
+      const fps = 30;
 
       const tracksWithoutClip = state.tracks.map(track => {
         const clip = track.clips.find(c => c.id === clipId);
         if (clip) {
-          clipToMove = { ...clip, trackId: newTrackId, startTime: newStartTime };
+          clipToMove = {
+            ...clip,
+            trackId: newTrackId,
+            startTime: newStartTime,
+            startInFrames: Math.floor(newStartTime * fps)
+          };
         }
         return {
           ...track,
@@ -256,31 +262,39 @@ export const useTimelineStore = create<TimelineStore>()(
   },
 
   trimClip: (clipId, side, newTime) => {
-    set((state) => ({
-      tracks: state.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip => {
-          if (clip.id !== clipId) return clip;
+    set((state) => {
+      const fps = 30;
 
-          if (side === 'start') {
-            const delta = newTime - clip.startTime;
-            return {
-              ...clip,
-              startTime: newTime,
-              duration: clip.duration - delta,
-              trimStart: clip.trimStart + delta
-            };
-          } else {
-            const newDuration = newTime - clip.startTime;
-            return {
-              ...clip,
-              duration: newDuration,
-              trimEnd: clip.trimEnd + (clip.duration - newDuration)
-            };
-          }
-        })
-      }))
-    }));
+      return {
+        tracks: state.tracks.map(track => ({
+          ...track,
+          clips: track.clips.map(clip => {
+            if (clip.id !== clipId) return clip;
+
+            if (side === 'start') {
+              const delta = newTime - clip.startTime;
+              const newDuration = clip.duration - delta;
+              return {
+                ...clip,
+                startTime: newTime,
+                duration: newDuration,
+                startInFrames: Math.floor(newTime * fps),
+                durationInFrames: Math.floor(newDuration * fps),
+                trimStart: clip.trimStart + delta
+              };
+            } else {
+              const newDuration = newTime - clip.startTime;
+              return {
+                ...clip,
+                duration: newDuration,
+                durationInFrames: Math.floor(newDuration * fps),
+                trimEnd: clip.trimEnd + (clip.duration - newDuration)
+              };
+            }
+          })
+        }))
+      };
+    });
 
     // Auto-extend timeline after trimming clip
     useTimelineStore.getState().updateTimelineDuration();
