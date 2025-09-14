@@ -490,12 +490,14 @@
 .text-editor-modal {
   background: #2a2a2a;
   border-radius: 8px;
-  width: 90%;
+  width: 90vw;
   max-width: 600px;
   max-height: 80vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin: 20px;
+  box-sizing: border-box;
 }
 
 .text-editor-header {
@@ -515,6 +517,8 @@
   padding: 20px;
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
 .form-group {
@@ -524,10 +528,14 @@
 .form-row {
   display: flex;
   gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-row .form-group {
   flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .form-group label {
@@ -549,6 +557,8 @@
   color: #e0e0e0;
   font-size: 14px;
   font-family: inherit;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .form-group textarea {
@@ -565,29 +575,15 @@
 }
 
 .text-preview {
-  margin-top: 20px;
-  padding: 16px;
-  background: #1a1a1a;
-  border-radius: 4px;
-  border: 1px solid #3a3a3a;
+  display: none;
 }
 
 .preview-label {
-  color: #999;
-  font-size: 12px;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  font-weight: 500;
+  display: none;
 }
 
 .preview-text {
-  color: #e0e0e0;
-  font-size: 16px;
-  line-height: 1.4;
-  min-height: 24px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  display: none;
 }
 
 .text-editor-actions {
@@ -899,4 +895,40 @@
   overflow: hidden;
   text-overflow: ellipsis;
   margin-left: 8px;
+}
+
+/* Responsive improvements for text editor modal */
+@media (max-width: 768px) {
+  .text-editor-modal {
+    width: 95vw;
+    margin: 10px;
+    max-height: 90vh;
+  }
+
+  .text-editor-content {
+    padding: 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .text-editor-actions {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .text-editor-modal {
+    width: 100vw;
+    margin: 0;
+    border-radius: 0;
+    max-height: 100vh;
+  }
+
+  .text-editor-content {
+    padding: 12px;
+  }
 }
