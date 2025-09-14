@@ -23,6 +23,7 @@ export const Clip: React.FC<ClipProps> = ({ clip, trackId }) => {
   } = useTimelineStore();
 
   const asset = clip.assetId ? getAsset(clip.assetId) : null;
+  const isTextClip = clip.metadata?.transcript && !clip.assetUrl && !clip.assetId;
 
   const [isTrimming, setIsTrimming] = useState<"start" | "end" | null>(null);
 
@@ -60,7 +61,7 @@ export const Clip: React.FC<ClipProps> = ({ clip, trackId }) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "Delete" && clip.selected) {
+      if ((e.key === "Delete" || e.key === "Backspace") && clip.selected) {
         removeClip(clip.id);
       }
     },
@@ -135,32 +136,49 @@ export const Clip: React.FC<ClipProps> = ({ clip, trackId }) => {
         onMouseDown={(e) => handleTrimStart(e, "start")}
       />
       <div className="clip-content">
-        {asset?.thumbnailUrl && (
-          <div className="clip-thumbnail">
-            <img src={asset.thumbnailUrl} alt={clip.name} />
-          </div>
-        )}
-        <div className="clip-info">
-          <span className="clip-name">{clip.name}</span>
-          {asset && (
-            <div className="clip-metadata">
-              <span className="clip-type">{asset.type}</span>
-              {asset.width && asset.height && (
-                <span className="clip-resolution">
-                  {asset.width}×{asset.height}
-                </span>
+        {isTextClip ? (
+          // Text clip content
+          <>
+            <div className="text-clip-icon">T</div>
+            <div className="clip-info">
+              <span className="clip-name">{clip.name}</span>
+              <div className="clip-metadata">
+                <span className="clip-type">text</span>
+                <span className="text-preview">{clip.metadata?.transcript}</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          // Media clip content
+          <>
+            {asset?.thumbnailUrl && (
+              <div className="clip-thumbnail">
+                <img src={asset.thumbnailUrl} alt={clip.name} />
+              </div>
+            )}
+            <div className="clip-info">
+              <span className="clip-name">{clip.name}</span>
+              {asset && (
+                <div className="clip-metadata">
+                  <span className="clip-type">{asset.type}</span>
+                  {asset.width && asset.height && (
+                    <span className="clip-resolution">
+                      {asset.width}×{asset.height}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-        {asset && (
-          <div className="clip-media-icon">
-            {asset.type === "video"
-              ? "🎬"
-              : asset.type === "audio"
-              ? "🎵"
-              : "🖼️"}
-          </div>
+            {asset && (
+              <div className="clip-media-icon">
+                {asset.type === "video"
+                  ? "🎬"
+                  : asset.type === "audio"
+                  ? "🎵"
+                  : "🖼️"}
+              </div>
+            )}
+          </>
         )}
       </div>
       <div

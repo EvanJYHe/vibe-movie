@@ -1,4 +1,4 @@
-import { Composition } from 'remotion';
+import { Composition, registerRoot } from 'remotion';
 import { VideoComposition } from './VideoComposition';
 import timelineData from '../data/timeline.json';
 import type { VideoTimeline } from '../types/timeline';
@@ -22,3 +22,5 @@ export const RemotionRoot: React.FC = () => {
     </>
   );
 };
+
+registerRoot(RemotionRoot);

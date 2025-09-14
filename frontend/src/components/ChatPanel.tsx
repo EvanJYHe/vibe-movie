@@ -1,38 +1,39 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import type { ChatMessage, ChatError } from '../types/chat';
-import { chatApi } from '../services/chatApi';
-import { chatStorage } from '../utils/chatStorage';
-import { useTimelineStore } from '../stores/timelineStore';
-import { convertTimelineToRemotionFormat } from '../utils/timeline';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import type { ChatMessage, ChatError } from "../types/chat";
+import { chatApi } from "../services/chatApi";
+import { chatStorage } from "../utils/chatStorage";
+import { useTimelineStore } from "../stores/timelineStore";
+import { convertTimelineToRemotionFormat } from "../utils/timeline";
 
 // Generate unique IDs for messages
-const generateId = () => `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+const generateId = () =>
+  `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 
 // Message Bubble Component
 const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
-  const isUser = message.role === 'user';
+  const isUser = message.role === "user";
 
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: isUser ? 'flex-end' : 'flex-start',
-        marginBottom: '12px',
-        paddingLeft: '16px',
-        paddingRight: '16px',
+        display: "flex",
+        justifyContent: isUser ? "flex-end" : "flex-start",
+        marginBottom: "12px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
       }}
     >
       <div
         style={{
-          maxWidth: '70%',
-          padding: '12px 16px',
-          borderRadius: '12px',
-          backgroundColor: isUser ? '#0066cc' : '#2a2a2a',
-          color: isUser ? 'white' : '#e0e0e0',
-          fontSize: '14px',
-          lineHeight: '1.4',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
+          maxWidth: "70%",
+          padding: "12px 16px",
+          borderRadius: "12px",
+          backgroundColor: isUser ? "#0066cc" : "#2a2a2a",
+          color: isUser ? "white" : "#e0e0e0",
+          fontSize: "14px",
+          lineHeight: "1.4",
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
         }}
       >
         {message.content}
@@ -49,27 +50,27 @@ const ErrorBanner: React.FC<{
 }> = ({ error, onRetry, onDismiss }) => (
   <div
     style={{
-      margin: '12px 16px',
-      padding: '12px',
-      backgroundColor: '#3a1f1f',
-      border: '1px solid #5a2a2a',
-      borderRadius: '8px',
-      fontSize: '14px',
-      color: '#ff6b6b',
+      margin: "12px 16px",
+      padding: "12px",
+      backgroundColor: "#3a1f1f",
+      border: "1px solid #5a2a2a",
+      borderRadius: "8px",
+      fontSize: "14px",
+      color: "#ff6b6b",
     }}
   >
-    <div style={{ marginBottom: '8px' }}>{error.message}</div>
-    <div style={{ display: 'flex', gap: '8px' }}>
+    <div style={{ marginBottom: "8px" }}>{error.message}</div>
+    <div style={{ display: "flex", gap: "8px" }}>
       <button
         onClick={onRetry}
         style={{
-          padding: '4px 8px',
-          fontSize: '12px',
-          border: '1px solid #ff6b6b',
-          borderRadius: '4px',
-          backgroundColor: '#2a2a2a',
-          color: '#ff6b6b',
-          cursor: 'pointer',
+          padding: "4px 8px",
+          fontSize: "12px",
+          border: "1px solid #ff6b6b",
+          borderRadius: "4px",
+          backgroundColor: "#2a2a2a",
+          color: "#ff6b6b",
+          cursor: "pointer",
         }}
       >
         Retry
@@ -77,14 +78,14 @@ const ErrorBanner: React.FC<{
       <button
         onClick={onDismiss}
         style={{
-          padding: '4px 8px',
-          fontSize: '12px',
-          border: 'none',
-          borderRadius: '4px',
-          backgroundColor: 'transparent',
-          color: '#ff6b6b',
-          cursor: 'pointer',
-          textDecoration: 'underline',
+          padding: "4px 8px",
+          fontSize: "12px",
+          border: "none",
+          borderRadius: "4px",
+          backgroundColor: "transparent",
+          color: "#ff6b6b",
+          cursor: "pointer",
+          textDecoration: "underline",
         }}
       >
         Dismiss
@@ -101,42 +102,42 @@ const ConfirmDialog: React.FC<{
 }> = ({ message, onConfirm, onCancel }) => (
   <div
     style={{
-      position: 'fixed',
+      position: "fixed",
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       zIndex: 1000,
     }}
     onClick={onCancel}
   >
     <div
       style={{
-        backgroundColor: '#2a2a2a',
-        padding: '24px',
-        borderRadius: '8px',
-        maxWidth: '400px',
-        margin: '20px',
+        backgroundColor: "#2a2a2a",
+        padding: "24px",
+        borderRadius: "8px",
+        maxWidth: "400px",
+        margin: "20px",
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div style={{ marginBottom: '16px', fontSize: '16px', color: '#e0e0e0' }}>
+      <div style={{ marginBottom: "16px", fontSize: "16px", color: "#e0e0e0" }}>
         {message}
       </div>
-      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+      <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
         <button
           onClick={onCancel}
           style={{
-            padding: '8px 16px',
-            border: '1px solid #3a3a3a',
-            borderRadius: '4px',
-            backgroundColor: '#1a1a1a',
-            color: '#e0e0e0',
-            cursor: 'pointer',
+            padding: "8px 16px",
+            border: "1px solid #3a3a3a",
+            borderRadius: "4px",
+            backgroundColor: "#1a1a1a",
+            color: "#e0e0e0",
+            cursor: "pointer",
           }}
         >
           Cancel
@@ -144,12 +145,12 @@ const ConfirmDialog: React.FC<{
         <button
           onClick={onConfirm}
           style={{
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '4px',
-            backgroundColor: '#ff6b6b',
-            color: 'white',
-            cursor: 'pointer',
+            padding: "8px 16px",
+            border: "none",
+            borderRadius: "4px",
+            backgroundColor: "#ff6b6b",
+            color: "white",
+            cursor: "pointer",
           }}
         >
           Clear
@@ -168,9 +169,11 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ChatError | null>(null);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
-  const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
+  const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(
+    null
+  );
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
   // Get timeline data from store
@@ -194,13 +197,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
   // Announce new assistant messages to screen readers
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage?.role === 'assistant' && liveRegionRef.current) {
+    if (lastMessage?.role === "assistant" && liveRegionRef.current) {
       liveRegionRef.current.textContent = `AI: ${lastMessage.content}`;
     }
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const saveMessages = useCallback((newMessages: ChatMessage[]) => {
@@ -212,7 +215,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
 
     const userMessage: ChatMessage = {
       id: generateId(),
-      role: 'user',
+      role: "user",
       content,
       createdAt: Date.now(),
     };
@@ -220,7 +223,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     saveMessages(newMessages);
-    setInputValue('');
+    setInputValue("");
     setError(null);
     setLastFailedMessage(null);
     setIsLoading(true);
@@ -228,11 +231,16 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
     try {
       // Convert current timeline to Remotion format for AI context
       const timeline = convertTimelineToRemotionFormat(tracks, assets);
-      const response = await chatApi.sendMessage(newMessages, timeline, videoFile || undefined);
+      const response = await chatApi.sendMessage(
+        newMessages,
+        timeline,
+        videoFile || undefined,
+        assets
+      );
 
       const assistantMessage: ChatMessage = {
         id: response.id,
-        role: 'assistant',
+        role: "assistant",
         content: response.content,
         createdAt: Date.now(),
       };
@@ -243,8 +251,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
 
       // Handle timeline updates from AI
       if (response.timeline) {
-        // TODO: Apply timeline updates to the store
-        console.log('Received timeline update from AI:', response.timeline);
+        // Timeline is automatically loaded by chatApi.sendMessage
       }
 
       // Clear video file after sending
@@ -252,7 +259,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
         setVideoFile(null);
       }
     } catch (err) {
-      console.error('Chat API error:', err);
+      console.error("Chat API error:", err);
       setError(err as ChatError);
       setLastFailedMessage(content);
     } finally {
@@ -269,7 +276,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       if (e.shiftKey) {
         // Allow newline
         return;
@@ -299,40 +306,48 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
     <div
       style={{
         width: `${width}px`,
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#1a1a1a',
-        borderLeft: '1px solid #3a3a3a',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "#1a1a1a",
+        borderLeft: "1px solid #3a3a3a",
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         flexShrink: 0,
       }}
     >
       {/* Header */}
       <div
         style={{
-          padding: '16px',
-          borderBottom: '1px solid #3a3a3a',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: '#252525',
+          padding: "16px",
+          borderBottom: "1px solid #3a3a3a",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#252525",
         }}
       >
-        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#e0e0e0' }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: "16px",
+            fontWeight: "600",
+            color: "#e0e0e0",
+          }}
+        >
           AI Chat
         </h3>
         <button
           onClick={handleClearHistory}
           disabled={messages.length === 0}
           style={{
-            padding: '4px 8px',
-            fontSize: '12px',
-            border: '1px solid #4a4a4a',
-            borderRadius: '4px',
-            backgroundColor: '#3a3a3a',
-            color: '#999',
-            cursor: messages.length === 0 ? 'not-allowed' : 'pointer',
+            padding: "4px 8px",
+            fontSize: "12px",
+            border: "1px solid #4a4a4a",
+            borderRadius: "4px",
+            backgroundColor: "#3a3a3a",
+            color: "#999",
+            cursor: messages.length === 0 ? "not-allowed" : "pointer",
             opacity: messages.length === 0 ? 0.5 : 1,
           }}
         >
@@ -344,17 +359,17 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
       <div
         style={{
           flex: 1,
-          overflowY: 'auto',
-          padding: '16px 0',
+          overflowY: "auto",
+          padding: "16px 0",
         }}
       >
         {messages.length === 0 ? (
           <div
             style={{
-              textAlign: 'center',
-              color: '#666',
-              fontSize: '14px',
-              padding: '40px 20px',
+              textAlign: "center",
+              color: "#666",
+              fontSize: "14px",
+              padding: "40px 20px",
             }}
           >
             Message the AI to get started...
@@ -368,22 +383,22 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
         {isLoading && (
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              marginBottom: '12px',
-              paddingLeft: '16px',
-              paddingRight: '16px',
+              display: "flex",
+              justifyContent: "flex-start",
+              marginBottom: "12px",
+              paddingLeft: "16px",
+              paddingRight: "16px",
             }}
           >
             <div
               style={{
-                maxWidth: '70%',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                backgroundColor: '#2a2a2a',
-                color: '#999',
-                fontSize: '14px',
-                fontStyle: 'italic',
+                maxWidth: "70%",
+                padding: "12px 16px",
+                borderRadius: "12px",
+                backgroundColor: "#2a2a2a",
+                color: "#999",
+                fontSize: "14px",
+                fontStyle: "italic",
               }}
             >
               AI is typing...
@@ -406,33 +421,35 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
       {/* Composer */}
       <div
         style={{
-          padding: '16px',
-          borderTop: '1px solid #3a3a3a',
+          padding: "16px",
+          borderTop: "1px solid #3a3a3a",
         }}
       >
         {/* Video file display */}
         {videoFile && (
-          <div style={{
-            marginBottom: '12px',
-            padding: '8px 12px',
-            backgroundColor: '#1a1a1a',
-            border: '1px solid #3a3a3a',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <span style={{ fontSize: '14px', color: '#e0e0e0', flex: 1 }}>
+          <div
+            style={{
+              marginBottom: "12px",
+              padding: "8px 12px",
+              backgroundColor: "#1a1a1a",
+              border: "1px solid #3a3a3a",
+              borderRadius: "6px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <span style={{ fontSize: "14px", color: "#e0e0e0", flex: 1 }}>
               📹 {videoFile.name}
             </span>
             <button
               onClick={() => setVideoFile(null)}
               style={{
-                background: 'none',
-                border: 'none',
-                color: '#666',
-                cursor: 'pointer',
-                fontSize: '16px'
+                background: "none",
+                border: "none",
+                color: "#666",
+                cursor: "pointer",
+                fontSize: "16px",
               }}
               title="Remove video"
             >
@@ -441,7 +458,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+        <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
           <textarea
             ref={inputRef}
             value={inputValue}
@@ -451,17 +468,17 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
             disabled={isLoading}
             style={{
               flex: 1,
-              minHeight: '20px',
-              maxHeight: '100px',
-              padding: '8px 12px',
-              border: '1px solid #3a3a3a',
-              borderRadius: '6px',
-              fontSize: '14px',
-              fontFamily: 'inherit',
-              resize: 'none',
-              outline: 'none',
-              backgroundColor: '#2a2a2a',
-              color: '#e0e0e0',
+              minHeight: "20px",
+              maxHeight: "100px",
+              padding: "8px 12px",
+              border: "1px solid #3a3a3a",
+              borderRadius: "6px",
+              fontSize: "14px",
+              fontFamily: "inherit",
+              resize: "none",
+              outline: "none",
+              backgroundColor: "#2a2a2a",
+              color: "#e0e0e0",
             }}
             aria-label="Chat message input"
           />
@@ -472,19 +489,19 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
               const file = e.target.files?.[0];
               if (file) setVideoFile(file);
             }}
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             id="video-upload"
           />
           <button
-            onClick={() => document.getElementById('video-upload')?.click()}
+            onClick={() => document.getElementById("video-upload")?.click()}
             style={{
-              padding: '8px',
-              border: '1px solid #3a3a3a',
-              borderRadius: '6px',
-              backgroundColor: videoFile ? '#0066cc' : '#2a2a2a',
-              color: videoFile ? 'white' : '#e0e0e0',
-              cursor: 'pointer',
-              fontSize: '16px',
+              padding: "8px",
+              border: "1px solid #3a3a3a",
+              borderRadius: "6px",
+              backgroundColor: videoFile ? "#0066cc" : "#2a2a2a",
+              color: videoFile ? "white" : "#e0e0e0",
+              cursor: "pointer",
+              fontSize: "16px",
             }}
             title="Upload video for analysis"
           >
@@ -494,14 +511,14 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
             onClick={() => handleSendMessage()}
             disabled={!canSend}
             style={{
-              padding: '8px 16px',
-              border: 'none',
-              borderRadius: '6px',
-              backgroundColor: canSend ? '#0066cc' : '#3a3a3a',
-              color: canSend ? 'white' : '#666',
-              cursor: canSend ? 'pointer' : 'not-allowed',
-              fontSize: '14px',
-              fontWeight: '500',
+              padding: "8px 16px",
+              border: "none",
+              borderRadius: "6px",
+              backgroundColor: canSend ? "#0066cc" : "#3a3a3a",
+              color: canSend ? "white" : "#666",
+              cursor: canSend ? "pointer" : "not-allowed",
+              fontSize: "14px",
+              fontWeight: "500",
             }}
             aria-label="Send message"
           >
@@ -516,11 +533,11 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ width = 400 }) => {
         aria-live="polite"
         aria-atomic="true"
         style={{
-          position: 'absolute',
-          left: '-10000px',
-          width: '1px',
-          height: '1px',
-          overflow: 'hidden',
+          position: "absolute",
+          left: "-10000px",
+          width: "1px",
+          height: "1px",
+          overflow: "hidden",
         }}
       />
 

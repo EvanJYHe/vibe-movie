@@ -24,6 +24,7 @@ import { PlayHead } from './PlayHead';
 import { MediaLibrary } from './MediaLibrary';
 import { MediaUpload } from './MediaUpload';
 import { ExportButton } from './ExportButton';
+import { TextEditor } from './TextEditor';
 import { useTimelineStore } from '../../stores/timelineStore';
 import './Timeline.css';
 
@@ -50,6 +51,7 @@ export const Timeline: React.FC = () => {
 
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
+  const [showTextEditor, setShowTextEditor] = useState(false);
   const [dragActive, setDragActive] = useState<DragData | null>(null);
 
   const sensors = useSensors(
@@ -70,10 +72,7 @@ export const Timeline: React.FC = () => {
     setDragActive(null);
     const { active, over } = event;
 
-    console.log('Drag end:', { active: active.data.current, over: over?.data.current, hasOver: !!over });
-
     if (!over) {
-      console.log('No drop target');
       return;
     }
 
@@ -95,8 +94,6 @@ export const Timeline: React.FC = () => {
 
     // Handle dragging assets from media library to timeline
     else if (activeData?.asset && trackData?.track) {
-      console.log('Dropping asset:', activeData.asset.url, 'on track:', trackData.track.name);
-
       // Simple calculation: just drop at the beginning for now to test
       let startTime = 0;
 
@@ -104,15 +101,12 @@ export const Timeline: React.FC = () => {
         startTime = Math.round(startTime / gridSize) * gridSize;
       }
 
-      console.log('Adding clip at:', startTime, 'seconds');
       addClipFromAsset(trackData.track.id, startTime, activeData.asset);
-    } else {
-      console.log('Unknown drag type or missing data:', { activeData, trackData });
     }
   }, [moveClip, addClipFromAsset, pixelsPerSecond, snapToGrid, gridSize]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Delete' && selectedClipIds.length > 0) {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedClipIds.length > 0) {
       selectedClipIds.forEach(clipId => removeClip(clipId));
     } else if (e.key === ' ' && e.target === document.body) {
       e.preventDefault();
@@ -154,6 +148,9 @@ export const Timeline: React.FC = () => {
         </button>
         <button onClick={() => setShowUpload(true)} className="toolbar-btn">
           📤 Upload Media
+        </button>
+        <button onClick={() => setShowTextEditor(true)} className="toolbar-btn">
+          Add Text
         </button>
         <button onClick={toggleSnapToGrid} className={`toolbar-btn ${snapToGrid ? 'active' : ''}`}>
           Snap: {snapToGrid ? 'ON' : 'OFF'}
@@ -219,6 +216,13 @@ export const Timeline: React.FC = () => {
         <MediaUpload
           onUpload={addAsset}
           onClose={() => setShowUpload(false)}
+        />
+      )}
+
+      {showTextEditor && (
+        <TextEditor
+          isOpen={showTextEditor}
+          onClose={() => setShowTextEditor(false)}
         />
       )}
     </div>

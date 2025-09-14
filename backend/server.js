@@ -244,10 +244,11 @@ app.post("/api/chat", upload.single("video"), async (req, res) => {
   let videoPath = null;
 
   try {
-    const { messages, timeline } = req.body;
+    const { messages, timeline, assets } = req.body;
     console.log(timeline);
     const parsedMessages = JSON.parse(messages || "[]");
     const parsedTimeline = JSON.parse(timeline || "{}");
+    const parsedAssets = JSON.parse(assets || "[]");
 
     if (!parsedMessages.length) {
       return res.status(400).json({ error: "Messages required" });
@@ -258,7 +259,7 @@ app.post("/api/chat", upload.single("video"), async (req, res) => {
 
     // Generate enhanced prompt with Remotion knowledge
     const hasVideo = !!req.file;
-    const prompt = generatePrompt(userMessage, parsedTimeline, hasVideo);
+    const prompt = generatePrompt(userMessage, parsedTimeline, hasVideo, parsedAssets);
 
     let inputs = [prompt];
 

@@ -7,36 +7,40 @@ export interface MediaAsset {
   width?: number;
   height?: number;
   thumbnailUrl?: string;
+  fileId?: string; // Reference to file stored in IndexedDB
 }
 
-// Timeline editor types
+// Unified clip type for all media and content
 export interface Clip {
   id: string;
   trackId: string;
+  type: 'video' | 'audio' | 'image' | 'text';
 
   // Timeline positioning
   startTime: number;  // Position on timeline in seconds
   duration: number;   // Duration on timeline in seconds
+  startInFrames: number; // Position in frames (for Remotion)
+  durationInFrames: number; // Duration in frames (for Remotion)
 
-  // Source trimming
-  trimStart: number;  // How much trimmed from start (sourceIn)
-  trimEnd: number;    // How much trimmed from end
-
-  // Media reference
+  // Media properties (for video/audio/image clips)
   assetId?: string;   // Reference to MediaAsset
-  assetUrl?: string;  // Direct URL for simple cases
+  assetUrl?: string;  // Direct URL for media
+  trimStart?: number; // Source trimming start (sourceIn)
+  trimEnd?: number;   // Source trimming end
+  volume?: number;    // Audio volume (0-1)
+  muted?: boolean;    // Audio muted state
 
-  // Visual properties (for Remotion rendering)
+  // Text properties (for text clips)
+  text?: string;      // Text content
+  style?: TextStyle;  // Text styling
+
+  // Visual properties (for all clip types)
   scale?: number;     // Default: 1.0
-  position?: { x: number; y: number }; // Default: {x: 0.5, y: 0.5}
+  position?: Position; // Position with units
   rotation?: number;  // Default: 0
   opacity?: number;   // Default: 1
 
-  // Audio
-  volume?: number;    // Default: 1
-  muted?: boolean;
-
-  // UI
+  // UI properties
   name: string;
   color: string;
   selected: boolean;
@@ -48,8 +52,9 @@ export interface Clip {
     tags?: string[];
   };
 
-  // Remotion effects (optional)
+  // Effects (optional)
   effects?: Effect[];
+  layout?: Layout;    // Text layout properties
 }
 
 export interface Track {
@@ -87,7 +92,7 @@ export interface TrimHandle {
   initialDuration: number;
 }
 
-// Remotion-specific types
+// Shared types
 export interface ProjectSettings {
   width: number;
   height: number;
@@ -127,62 +132,11 @@ export interface TextStyle {
   textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 }
 
-// Remotion clip types (converted from timeline Clip)
-export interface RemotionVideoClip {
-  id: string;
-  assetUrl: string;
-  startInFrames: number;
-  durationInFrames: number;
-  sourceIn?: number; // Start frame within the source video (for trimming)
-  sourceOut?: number; // End frame within the source video (for trimming)
-  effects?: Effect[];
-  scale?: number;
-  position?: { x: number; y: number };
-  rotation?: number;
-  opacity?: number;
-}
 
-export interface RemotionTextClip {
-  id: string;
-  text: string;
-  style: TextStyle;
-  startInFrames: number;
-  durationInFrames: number;
-  effects?: Effect[];
-  position?: Position;
-  layout?: Layout;
-}
-
-export type RemotionClip = RemotionVideoClip | RemotionTextClip;
-
-// Alternative clip types for better-prompting compatibility
-export interface BaseClip {
-  id: string;
-  startInFrames: number;
-  durationInFrames: number;
-  effects?: Effect[];
-}
-
-export interface VideoClip extends BaseClip {
-  assetUrl: string;
-}
-
-export interface TextClip extends BaseClip {
-  text: string;
-  style: TextStyle;
-  position?: Position;
-  layout?: Layout;
-}
-
-export interface RemotionTrack {
-  id: string;
-  type: 'video' | 'text';
-  clips: RemotionClip[];
-}
 
 export interface VideoTimeline {
   project: ProjectSettings;
-  timeline: RemotionTrack[];
+  timeline: Track[];
 }
 
 // For Remotion export
