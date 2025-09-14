@@ -152,9 +152,6 @@ export const Timeline: React.FC = () => {
         <button onClick={() => setShowTextEditor(true)} className="toolbar-btn">
           Add Text
         </button>
-        <button onClick={toggleSnapToGrid} className={`toolbar-btn ${snapToGrid ? 'active' : ''}`}>
-          Snap: {snapToGrid ? 'ON' : 'OFF'}
-        </button>
         <ExportButton />
         <div className="zoom-controls">
           <button onClick={() => setZoom(zoom / 1.2)} className="toolbar-btn">
