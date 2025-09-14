@@ -4,7 +4,7 @@ import type {
   ChatError,
   ChatMessage,
 } from "../types/chat";
-import type { VideoTimeline } from "../types/timeline";
+import type { VideoTimeline, MediaAsset } from "../types/timeline";
 
 const CHAT_ENDPOINT = "/api/chat";
 
@@ -18,13 +18,17 @@ class ChatApiClient {
   async sendMessage(
     messages: ChatMessage[],
     timeline?: VideoTimeline,
-    videoFile?: File
+    videoFile?: File,
+    assets?: MediaAsset[]
   ): Promise<ChatApiResponse> {
     try {
       const formData = new FormData();
       formData.append("messages", JSON.stringify(messages));
       if (timeline) {
         formData.append("timeline", JSON.stringify(timeline));
+      }
+      if (assets) {
+        formData.append("assets", JSON.stringify(assets));
       }
       if (videoFile) {
         formData.append("video", videoFile);
@@ -40,7 +44,6 @@ class ChatApiClient {
       }
 
       const data: ChatApiResponse = await response.json();
-      console.log(data);
 
       if (!data.id || !data.content) {
         throw new Error("Invalid response format from chat API");
@@ -48,9 +51,10 @@ class ChatApiClient {
 
       // If AI returned a timeline, load it into the timeline store
       if (data.timeline) {
-        const { useTimelineStore } = await import('../stores/timelineStore');
+        console.log("AI returned timeline:", JSON.stringify(data.timeline, null, 2));
+        const { useTimelineStore } = await import("../stores/timelineStore");
         useTimelineStore.getState().loadTimelineFromAI(data.timeline);
-        console.log('AI timeline loaded into store');
+        console.log("AI timeline loaded into store");
       }
 
       return data;

@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import type { MediaAsset } from '../../types/timeline';
+import { saveMediaFile, generateFileId } from '../../utils/storage';
 
 interface MediaUploadProps {
   onUpload: (asset: MediaAsset) => void;
@@ -35,6 +36,7 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({ onUpload, onClose }) =
   }, [onUpload, onClose]);
 
   const processFile = async (file: File): Promise<MediaAsset> => {
+    const fileId = generateFileId();
     const url = URL.createObjectURL(file);
     const type = getMediaType(file.type);
 
@@ -85,6 +87,14 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({ onUpload, onClose }) =
       thumbnailUrl = url;
     }
 
+    // Save file to IndexedDB
+    try {
+      await saveMediaFile(fileId, file);
+    } catch (error) {
+      console.error('Failed to save file to IndexedDB:', error);
+      // Continue with temporary URL if storage fails
+    }
+
     return {
       id: generateId(),
       url,
@@ -92,7 +102,8 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({ onUpload, onClose }) =
       duration,
       width,
       height,
-      thumbnailUrl
+      thumbnailUrl,
+      fileId
     };
   };
 

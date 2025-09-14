@@ -3,8 +3,9 @@ const { TIMELINE_OPERATIONS, validateTimeline, DEFAULT_PROJECT } = require('./ti
 
 /**
  * Generate comprehensive prompt for Gemini AI with deep Remotion knowledge
+ * (LEGACY - use generateSimplifiedPrompt instead)
  */
-function generateVideoEditingPrompt(userMessage, currentTimeline, hasVideo = false) {
+function generateComplexVideoEditingPrompt(userMessage, currentTimeline, hasVideo = false) {
   const timelineStatus = currentTimeline?.timeline?.length > 0 ? 'has existing content' : 'is empty or minimal';
 
   return `# AI VIDEO EDITOR - REMOTION SPECIALIST
@@ -132,8 +133,9 @@ Now process the user's request and return the modified timeline with your explan
 
 /**
  * Enhanced prompt for video analysis with multimodal input
+ * (LEGACY - use generateSimplifiedPrompt instead)
  */
-function generateVideoAnalysisPrompt(userMessage, currentTimeline, videoDescription = '') {
+function generateComplexVideoAnalysisPrompt(userMessage, currentTimeline, videoDescription = '') {
   return `# AI VIDEO EDITOR - VIDEO ANALYSIS MODE
 
 You are analyzing a video file to help with editing. You understand both visual content and timeline modification.
@@ -258,26 +260,152 @@ function detectEditingOperation(userMessage) {
 
 /**
  * Main function to generate appropriate prompt based on context
+ * (Now uses simplified prompt by default)
  */
-function generatePrompt(userMessage, currentTimeline, hasVideo = false) {
+function generatePrompt(userMessage, currentTimeline, hasVideo = false, assets = []) {
   // Ensure timeline has proper structure
   const timeline = currentTimeline || {
     project: DEFAULT_PROJECT,
     timeline: []
   };
 
-  if (hasVideo) {
-    return generateVideoAnalysisPrompt(userMessage, timeline);
-  } else {
-    return generateVideoEditingPrompt(userMessage, timeline);
-  }
+  // Use simplified prompt for both video and text cases
+  return generateSimplifiedPrompt(userMessage, timeline, hasVideo, assets);
+}
+
+/**
+ * Simplified prompt using direct TypeScript schemas from frontend
+ */
+function generateSimplifiedPrompt(userMessage, currentTimeline, hasVideo = false, assets = []) {
+  const timelineStatus = currentTimeline?.timeline?.length > 0 ? 'has existing content' : 'is empty';
+  const assetsStatus = assets && assets.length > 0 ? `${assets.length} available` : 'none available';
+
+  return `# AI Video Editor
+
+You are a video editor AI. Edit the timeline based on user requests and return the complete modified timeline.
+
+## TypeScript Schema (FOLLOW EXACTLY):
+
+\`\`\`typescript
+interface Clip {
+  id: string;
+  trackId: string;
+  type: 'video' | 'audio' | 'image' | 'text';  // REQUIRED explicit type
+
+  // Timeline positioning
+  startTime: number;        // Position in seconds
+  duration: number;         // Duration in seconds
+  startInFrames: number;    // Position in frames (30fps)
+  durationInFrames: number; // Duration in frames (30fps)
+
+  // Media properties (for video/audio/image clips)
+  assetId?: string;
+  assetUrl?: string;
+  trimStart?: number;
+  trimEnd?: number;
+  volume?: number;    // 0-1
+  muted?: boolean;
+
+  // Text properties (for text clips)
+  text?: string;
+  style?: {
+    fontFamily: string;
+    fontSize: number;
+    fontWeight: string;
+    color: string;        // hex codes like "#FFFFFF"
+    textShadow?: string;
+  };
+
+  // Visual properties
+  scale?: number;
+  position?: { x: number; y: number; unit?: string };
+  rotation?: number;
+  opacity?: number;
+
+  // UI (required)
+  name: string;
+  color: string;
+  selected: boolean;
+
+  // Optional
+  metadata?: { transcript?: string; scene?: string; tags?: string[] };
+  // effects?: Array<{ type: string; durationInFrames: number }>; // DISABLED - causes rendering issues
+}
+
+interface Track {
+  id: string;
+  name: string;
+  height: number;
+  muted: boolean;
+  locked: boolean;
+  color: string;
+  clips: Clip[];
+}
+
+interface VideoTimeline {
+  project: { width: number; height: number; fps: number };
+  timeline: Track[];
+}
+\`\`\`
+
+## Current Timeline:
+${JSON.stringify(currentTimeline, null, 2)}
+
+## Available Assets (Video Library):
+Media assets: ${assetsStatus}
+${assets && assets.length > 0 ? JSON.stringify(assets, null, 2) : 'No media assets available'}
+
+## User Request:
+"${userMessage}"
+
+## Instructions:
+1. **Always return COMPLETE timeline** (don't ask questions)
+2. **Calculate frame values**: startInFrames = startTime * 30, durationInFrames = duration * 30
+3. **Set explicit 'type' field** for all clips ('video', 'audio', 'image', 'text')
+4. **For text clips**: Include text, style with defaults (fontFamily: "Arial, sans-serif", fontSize: 48, fontWeight: "bold", color: "#FFFFFF")
+5. **For media clips**: Use assetId and assetUrl from available assets. Set type based on asset.type
+6. **NO EFFECTS**: Do NOT include effects field in clips - causes rendering issues
+7. **Preserve existing content** unless told to remove it
+8. **Use UNIQUE IDs**: Generate unique clip IDs (e.g., text-1, text-2, video-1) - NEVER reuse IDs
+9. **Track IDs**: Keep existing track IDs when possible (track-1, track-2, ai-track-1, ai-track-2)
+
+## Common Operations:
+- **Add text**: Create new clip with type="text", set text and style
+- **Add video**: Create new clip with type="video"/"audio"/"image", use assetId and assetUrl from assets
+- **Change text**: Find existing text clips, update text field
+- **Move clips**: Adjust startTime and startInFrames
+- **Style changes**: Update style object
+
+## Video Asset Usage:
+To add a video/image/audio clip:
+1. Find the asset in the assets array by name or type
+2. Create clip with assetId=asset.id and assetUrl=asset.url
+3. Set type to match asset.type ('video', 'audio', 'image')
+4. Set duration to asset.duration or desired length
+5. Use trimStart/trimEnd for partial clips (in seconds)
+
+## Response Format:
+Brief explanation followed by:
+
+\`\`\`json
+{
+  "project": {"width": 1920, "height": 1080, "fps": 30},
+  "timeline": [
+    // Complete modified timeline here
+  ]
+}
+\`\`\`
+
+Process the request and return the complete modified timeline.`;
 }
 
 module.exports = {
-  generatePrompt,
+  generatePrompt: generateSimplifiedPrompt,  // Use simplified by default
+  generateSimplifiedPrompt,
+  generateComplexPrompt: generateComplexVideoEditingPrompt,  // Keep complex as backup
   parseTimelineFromResponse,
   cleanResponseText,
   detectEditingOperation,
-  generateVideoEditingPrompt,
-  generateVideoAnalysisPrompt
+  generateVideoEditingPrompt: generateComplexVideoEditingPrompt,
+  generateVideoAnalysisPrompt: generateComplexVideoAnalysisPrompt
 };

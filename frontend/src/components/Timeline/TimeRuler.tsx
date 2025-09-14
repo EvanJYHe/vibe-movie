@@ -4,8 +4,6 @@ import { useTimelineStore } from '../../stores/timelineStore';
 export const TimeRuler: React.FC = () => {
   const { duration, pixelsPerSecond, setPlayheadPosition } = useTimelineStore();
 
-  console.log(`TimeRuler render: duration=${duration}, pixelsPerSecond=${pixelsPerSecond}`);
-
   const markers = useMemo(() => {
     const markerInterval = pixelsPerSecond < 30 ? 5 : pixelsPerSecond < 60 ? 2 : 1;
     const markers = [];
@@ -18,7 +16,6 @@ export const TimeRuler: React.FC = () => {
       });
     }
 
-    console.log(`TimeRuler: Generated ${markers.length} markers for ${duration} seconds`);
     return markers;
   }, [duration, pixelsPerSecond]);
 

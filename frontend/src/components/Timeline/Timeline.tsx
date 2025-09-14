@@ -55,7 +55,6 @@ export const Timeline: React.FC = () => {
   );
 
   const handleDragStart = useCallback((event: any) => {
-    console.log('Drag start:', event.active.data.current);
     setDragActive(event.active.data.current);
   }, []);
 
@@ -63,10 +62,7 @@ export const Timeline: React.FC = () => {
     setDragActive(null);
     const { active, over } = event;
 
-    console.log('Drag end:', { active: active.data.current, over: over?.data.current, hasOver: !!over });
-
     if (!over) {
-      console.log('No drop target');
       return;
     }
 
@@ -88,8 +84,6 @@ export const Timeline: React.FC = () => {
 
     // Handle dragging assets from media library to timeline
     else if (activeData?.asset && trackData?.track) {
-      console.log('Dropping asset:', activeData.asset.url, 'on track:', trackData.track.name);
-
       // Simple calculation: just drop at the beginning for now to test
       let startTime = 0;
 
@@ -97,10 +91,7 @@ export const Timeline: React.FC = () => {
         startTime = Math.round(startTime / gridSize) * gridSize;
       }
 
-      console.log('Adding clip at:', startTime, 'seconds');
       addClipFromAsset(trackData.track.id, startTime, activeData.asset);
-    } else {
-      console.log('Unknown drag type or missing data:', { activeData, trackData });
     }
   }, [moveClip, addClipFromAsset, pixelsPerSecond, snapToGrid, gridSize]);
 

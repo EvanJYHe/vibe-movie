@@ -1,5 +1,7 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Clip, Track, TimelineState, MediaAsset } from '../types/timeline';
+import { loadMediaFile, cleanupUnusedFiles } from '../utils/storage';
 
 interface TimelineStore extends TimelineState {
   assets: MediaAsset[];
@@ -24,6 +26,8 @@ interface TimelineStore extends TimelineState {
   updateClip: (clipId: string, updates: Partial<Clip>) => void;
   updateTimelineDuration: () => void;
   loadTimelineFromAI: (aiTimeline: any) => void;
+  restoreMediaUrls: () => Promise<void>;
+  cleanupStorage: () => Promise<void>;
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -33,7 +37,9 @@ const generateColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-export const useTimelineStore = create<TimelineStore>((set) => ({
+export const useTimelineStore = create<TimelineStore>()(
+  persist(
+    (set, get) => ({
   tracks: [
     {
       id: 'track-1',
@@ -70,7 +76,7 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
       height: 80,
       muted: false,
       locked: false,
-      color: generateColor(),
+      color: '#666666', // Gray for tracks
       clips: []
     }]
   })),
@@ -103,18 +109,22 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
   addClip: (trackId, startTime, assetId) => {
     set((state) => {
       const asset = assetId ? state.assets.find(a => a.id === assetId) : null;
+      const fps = 30;
 
       const newClip: Clip = {
         id: generateId(),
         trackId,
+        type: asset?.type || 'video',
         startTime,
         duration: asset ? asset.duration : 5,
+        startInFrames: Math.floor(startTime * fps),
+        durationInFrames: Math.floor((asset ? asset.duration : 5) * fps),
         trimStart: 0,
         trimEnd: 0,
         assetId: asset?.id,
         assetUrl: asset?.url,
         name: asset ? asset.url.split('/').pop()?.split('.')[0] || 'Clip' : `Clip ${Date.now()}`,
-        color: generateColor(),
+        color: asset?.type === 'text' ? '#00FF00' : '#FF0000', // Green for text, red for video/audio/image
         selected: false
       };
 
@@ -133,17 +143,22 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
 
   addClipFromAsset: (trackId, startTime, asset) => {
     set((state) => {
+      const fps = 30;
+
       const newClip: Clip = {
         id: generateId(),
         trackId,
+        type: asset.type,
         startTime,
         duration: asset.duration,
+        startInFrames: Math.floor(startTime * fps),
+        durationInFrames: Math.floor(asset.duration * fps),
         trimStart: 0,
         trimEnd: 0,
         assetId: asset.id,
         assetUrl: asset.url,
         name: asset.url.split('/').pop()?.split('.')[0] || 'Clip',
-        color: generateColor(),
+        color: asset.type === 'text' ? '#00FF00' : '#FF0000', // Green for text, red for video/audio/image
         selected: false
       };
 
@@ -162,16 +177,27 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
 
   addTextClip: (trackId, startTime, text, duration) => {
     set((state) => {
+      const fps = 30;
+
       const newClip: Clip = {
         id: generateId(),
         trackId,
+        type: 'text',
         startTime,
         duration,
-        trimStart: 0,
-        trimEnd: 0,
-        // No assetId or assetUrl for text clips
+        startInFrames: Math.floor(startTime * fps),
+        durationInFrames: Math.floor(duration * fps),
+        text,
+        style: {
+          fontFamily: 'Arial, sans-serif',
+          fontSize: 48,
+          fontWeight: 'bold',
+          color: 'white',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+        },
+        position: { x: 50, y: 50, unit: '%' },
         name: `Text: ${text.substring(0, 20)}${text.length > 20 ? '...' : ''}`,
-        color: '#FF6B6B', // Special color for text clips
+        color: '#00FF00', // Green for text clips
         selected: false,
         metadata: {
           transcript: text
@@ -351,7 +377,6 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
       track.clips.forEach(clip => {
         const clipEnd = clip.startTime + clip.duration;
         maxEndTime = Math.max(maxEndTime, clipEnd);
-        console.log(`Clip: ${clip.name}, Start: ${clip.startTime}, Duration: ${clip.duration}, End: ${clipEnd}`);
       });
     });
 
@@ -360,11 +385,8 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
     const padding = 60; // 1 minute of extra space
     const newDuration = Math.max(minDuration, maxEndTime + padding);
 
-    console.log(`Timeline Duration Update: maxEndTime=${maxEndTime}, current=${state.duration}, new=${newDuration}`);
-
     // Always update duration to ensure it reflects current content
     if (newDuration !== state.duration) {
-      console.log(`Updating timeline duration from ${state.duration} to ${newDuration}`);
       return { duration: newDuration };
     }
 
@@ -388,32 +410,69 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
           const startTime = (aiClip.startInFrames || 0) / fps;
           const duration = (aiClip.durationInFrames || 0) / fps;
 
-          return {
-            id: aiClip.id || generateId(),
+          // Determine clip type from AI data
+          let clipType: 'video' | 'audio' | 'image' | 'text' = aiClip.type || 'video';
+          if (aiClip.text && !aiClip.assetUrl) {
+            clipType = 'text';
+          } else if (aiClip.assetUrl && !aiClip.type) {
+            // Try to determine type from URL if not provided
+            if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(aiClip.assetUrl)) {
+              clipType = 'image';
+            } else if (/\.(mp3|wav|ogg|aac)$/i.test(aiClip.assetUrl)) {
+              clipType = 'audio';
+            } else {
+              clipType = 'video';
+            }
+          }
+
+          const clip: Clip = {
+            id: aiClip.id ? `${aiClip.id}-${generateId()}` : generateId(), // Ensure unique IDs
             trackId,
+            type: clipType,
             startTime,
             duration,
-            trimStart: 0,
-            trimEnd: 0,
-            assetId: undefined,
-            assetUrl: aiClip.assetUrl,
+            startInFrames: aiClip.startInFrames || Math.floor(startTime * fps),
+            durationInFrames: aiClip.durationInFrames || Math.floor(duration * fps),
             name: aiClip.text || aiClip.assetUrl?.split('/').pop()?.split('.')[0] || 'AI Clip',
-            color: generateColor(),
+            color: clipType === 'text' ? '#00FF00' : '#FF0000', // Green for text, red for video/audio/image
             selected: false,
             // Copy AI properties
             scale: aiClip.scale,
             position: aiClip.position,
             rotation: aiClip.rotation,
             opacity: aiClip.opacity,
-            volume: aiClip.volume,
-            muted: aiClip.muted,
+            // effects: aiClip.effects, // DISABLED - causes rendering issues
             metadata: {
               transcript: aiClip.text,
               scene: aiClip.scene,
               tags: aiClip.tags
-            },
-            effects: aiClip.effects
+            }
           };
+
+          // Set type-specific properties
+          if (clipType === 'text') {
+            console.log('Creating AI text clip:', aiClip.text, 'from AI clip:', aiClip);
+            clip.text = aiClip.text;
+            clip.style = aiClip.style || {
+              fontFamily: 'Arial, sans-serif',
+              fontSize: 48,
+              fontWeight: 'bold',
+              color: 'white',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+            };
+            clip.layout = aiClip.layout;
+            console.log('Created AI text clip:', clip);
+          } else if (aiClip.assetUrl) {
+            clip.assetUrl = aiClip.assetUrl;
+            if (clipType === 'video' || clipType === 'audio') {
+              clip.volume = aiClip.volume;
+              clip.muted = aiClip.muted;
+              clip.trimStart = aiClip.sourceIn ? aiClip.sourceIn / fps : 0;
+              clip.trimEnd = aiClip.sourceOut ? (aiClip.sourceOut - aiClip.sourceIn) / fps : 0;
+            }
+          }
+
+          return clip;
         });
 
         return {
@@ -422,13 +481,22 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
           height: 80,
           muted: false,
           locked: false,
-          color: generateColor(),
+          color: '#666666', // Gray for tracks
           clips,
           type: aiTrack.type
         };
       });
 
       console.log('Loading AI timeline with tracks:', newTracks);
+      console.log('Total clips across all tracks:', newTracks.reduce((total, track) => total + track.clips.length, 0));
+
+      // Debug each track and its clips
+      newTracks.forEach((track, i) => {
+        console.log(`Track ${i} (${track.id}):`, track.clips.length, 'clips');
+        track.clips.forEach((clip, j) => {
+          console.log(`  Clip ${j}:`, clip.id, clip.type, clip.text || clip.assetUrl);
+        });
+      });
 
       // Replace current tracks with AI tracks
       return {
@@ -440,5 +508,72 @@ export const useTimelineStore = create<TimelineStore>((set) => ({
       console.error('Error loading AI timeline:', error);
       return state;
     }
-  })
-}));
+  }),
+
+  restoreMediaUrls: async () => {
+    const state = get();
+    const assets = [...state.assets];
+    let urlsRestored = 0;
+
+    // Restore URLs for assets that have fileIds
+    for (const asset of assets) {
+      if (asset.fileId && !asset.url.startsWith('blob:')) {
+        try {
+          const restoredUrl = await loadMediaFile(asset.fileId);
+          if (restoredUrl) {
+            asset.url = restoredUrl;
+            if (asset.thumbnailUrl && asset.thumbnailUrl !== restoredUrl) {
+              // For images, use the same URL as thumbnail
+              if (asset.type === 'image') {
+                asset.thumbnailUrl = restoredUrl;
+              }
+            }
+            urlsRestored++;
+          }
+        } catch (error) {
+          console.error(`Failed to restore URL for asset ${asset.id}:`, error);
+        }
+      }
+    }
+
+    if (urlsRestored > 0) {
+      set({ assets });
+      console.log(`Restored ${urlsRestored} media URLs from storage`);
+    }
+  },
+
+  cleanupStorage: async () => {
+    const state = get();
+    const activeFileIds = state.assets
+      .filter(asset => asset.fileId)
+      .map(asset => asset.fileId!);
+
+    try {
+      await cleanupUnusedFiles(activeFileIds);
+    } catch (error) {
+      console.error('Failed to cleanup storage:', error);
+    }
+  }
+    }),
+    {
+      name: 'timeline-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        tracks: state.tracks,
+        assets: state.assets.map(asset => ({
+          ...asset,
+          // Don't persist blob URLs, only file IDs and metadata
+          url: asset.fileId ? '' : asset.url,
+          thumbnailUrl: asset.fileId && asset.type !== 'image' ? asset.thumbnailUrl : ''
+        })),
+        duration: state.duration,
+        zoom: state.zoom,
+        snapToGrid: state.snapToGrid,
+        gridSize: state.gridSize,
+        pixelsPerSecond: state.pixelsPerSecond,
+        playheadPosition: 0, // Reset playhead on reload
+        selectedClipIds: [] // Don't persist selection
+      }),
+    }
+  )
+);
