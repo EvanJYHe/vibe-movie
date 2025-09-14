@@ -124,7 +124,7 @@ export const useTimelineStore = create<TimelineStore>()(
         assetId: asset?.id,
         assetUrl: asset?.url,
         name: asset ? asset.url.split('/').pop()?.split('.')[0] || 'Clip' : `Clip ${Date.now()}`,
-        color: asset?.type === 'text' ? '#00FF00' : '#FF0000', // Green for text, red for video/audio/image
+        color: asset?.type === 'text' ? '#00FF00' : '#0080FF', // Green for text, blue for video/audio/image
         selected: false
       };
 
@@ -158,7 +158,7 @@ export const useTimelineStore = create<TimelineStore>()(
         assetId: asset.id,
         assetUrl: asset.url,
         name: asset.url.split('/').pop()?.split('.')[0] || 'Clip',
-        color: asset.type === 'text' ? '#00FF00' : '#FF0000', // Green for text, red for video/audio/image
+        color: asset.type === 'text' ? '#00FF00' : '#0080FF', // Green for text, blue for video/audio/image
         selected: false
       };
 
@@ -434,7 +434,7 @@ export const useTimelineStore = create<TimelineStore>()(
             startInFrames: aiClip.startInFrames || Math.floor(startTime * fps),
             durationInFrames: aiClip.durationInFrames || Math.floor(duration * fps),
             name: aiClip.text || aiClip.assetUrl?.split('/').pop()?.split('.')[0] || 'AI Clip',
-            color: clipType === 'text' ? '#00FF00' : '#FF0000', // Green for text, red for video/audio/image
+            color: clipType === 'text' ? '#00FF00' : '#0080FF', // Green for text, blue for video/audio/image
             selected: false,
             // Copy AI properties
             scale: aiClip.scale,

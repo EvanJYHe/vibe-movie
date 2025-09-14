@@ -28,11 +28,30 @@ const VideoClipComponent: React.FC<{ clip: Clip; track: Track }> = ({ clip }) =>
     console.warn('Video playback error for clip:', clip.id, error.message);
   };
 
+  // Check if video is vertical (height > width) and center it
+  const videoStyle = { width: '100%', height: '100%' };
+  const containerStyle: React.CSSProperties = {
+    opacity,
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black'
+  };
+
+  // If we have video dimensions from the asset, check if it's vertical
+  // Note: We'd need to get asset info from the store, for now use objectFit
   return (
-    <div style={{ opacity }}>
+    <div style={containerStyle}>
       <Video
         src={clip.assetUrl}
-        style={{ width: '100%', height: '100%' }}
+        style={{
+          ...videoStyle,
+          objectFit: 'contain', // This centers and scales the video properly
+          maxWidth: '100%',
+          maxHeight: '100%'
+        }}
         startFrom={clip.trimStart ? Math.floor(clip.trimStart * 30) : 0}
         endAt={clip.trimEnd ? Math.floor((clip.trimStart || 0 + clip.duration) * 30) : undefined}
         onError={handleVideoError}
