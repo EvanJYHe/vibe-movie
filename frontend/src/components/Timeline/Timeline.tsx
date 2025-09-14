@@ -140,7 +140,7 @@ export const Timeline: React.FC = () => {
           📤 Upload Media
         </button>
         <button onClick={() => setShowTextEditor(true)} className="toolbar-btn">
-          T Add Text
+          Add Text
         </button>
         <button onClick={toggleSnapToGrid} className={`toolbar-btn ${snapToGrid ? 'active' : ''}`}>
           Snap: {snapToGrid ? 'ON' : 'OFF'}
