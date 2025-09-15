@@ -4,9 +4,6 @@
 
 VibeMovie is an AI-native video editor that redefines the creation process. Instead of a complex timeline and a sea of buttons, you direct the edit through a simple, conversational chat. Tell our AI assistant what you want to see, and watch it build your video in real time.
 
-![VibeMovie Demo](https://via.placeholder.com/800x450.png?text=VibeMovie+Application+Demo)
-*(A GIF showcasing the chat interface, the timeline updating, and the video preview would be perfect here.)*
-
 ## What is This?
 
 Traditional video editing software is powerful but often comes with a steep learning curve that can get in the way of creativity. We wanted to change that. VibeMovie is our vision for a more intuitive workflow, where your creative intent is translated directly into a finished product.
