@@ -1,0 +1,149 @@
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/dm-sans-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-500-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-600-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-serif-regular-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-serif-italic-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/manrope-latin.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: dark;
+
+  --font-display: "Instrument Serif", "Times New Roman", serif;
+  --font-body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-ui: "Manrope", "DM Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+
+  --color-paper: oklch(13.98% 0.006 89);
+  --color-paper-2: oklch(16.5% 0.007 89);
+  --color-paper-3: oklch(19.5% 0.008 89);
+  --color-paper-4: oklch(22.5% 0.009 89);
+  --color-paper-5: oklch(26% 0.01 89);
+  --color-paper-deep: oklch(10.5% 0.005 89);
+  --color-stage: oklch(11.5% 0.006 89);
+  --color-preview: oklch(8.5% 0.005 89);
+  --color-overlay: oklch(8% 0.006 89 / 0.92);
+
+  --color-ink: oklch(96% 0.006 89);
+  --color-ink-2: oklch(78% 0.008 89);
+  --color-muted: oklch(67% 0.008 89);
+  --color-faint: oklch(58% 0.008 89);
+  --color-rule: oklch(96% 0.006 89 / 0.08);
+  --color-rule-2: oklch(96% 0.006 89 / 0.05);
+  --color-rule-strong: oklch(96% 0.006 89 / 0.18);
+
+  --color-accent: oklch(76.57% 0.0991 89.3);
+  --color-accent-soft: oklch(29% 0.05 89);
+  --color-accent-faint: oklch(20% 0.025 89);
+  --color-accent-ink: var(--color-paper-deep);
+  --color-focus: oklch(86% 0.1 89);
+
+  --color-secondary: oklch(78% 0.055 89);
+  --color-secondary-faint: oklch(20% 0.018 89);
+
+  --color-danger: oklch(68% 0.16 24);
+  --color-danger-soft: oklch(25% 0.06 24);
+  --color-shadow: oklch(4% 0.006 89 / 0.72);
+
+  --color-clip-video: oklch(24% 0.035 89);
+  --color-clip-video-2: oklch(30% 0.05 89);
+  --color-clip-image: oklch(26% 0.03 89);
+  --color-clip-text: oklch(23% 0.015 89);
+  --color-clip-audio: oklch(24% 0.022 89);
+  --color-clip-audio-2: oklch(30% 0.035 89);
+  --color-wave: oklch(76% 0.06 89);
+
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 2.5rem;
+
+  --text-2xs: 0.625rem;
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-md: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.25rem;
+
+  --radius-xs: 0.0625rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.375rem;
+  --radius-round: 999rem;
+
+  --rule-thin: 0.0625rem;
+  --rule-strong: 0.125rem;
+  --rule-wordmark: 0.01875rem;
+
+  --size-topbar: 4rem;
+  --size-brand: 1.875rem;
+  --size-library-wide: clamp(22rem, 38vw, 40rem);
+  --size-library-compact: 18rem;
+  --size-director-drawer: 22.5rem;
+  --size-track-head: 8rem;
+  --size-modebar: 3rem;
+  --size-empty-mark: 2.75rem;
+  --size-control: 2.25rem;
+  --size-control-small: 1.75rem;
+
+  --dur-micro: 100ms;
+  --dur-short: 180ms;
+  --dur-long: 420ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-dialog: 0 1.5rem 4rem var(--color-shadow);
+}
