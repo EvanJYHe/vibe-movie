@@ -1,0 +1,20 @@
+{
+  "name": "vibemovie",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An AI-assisted, timeline-based video editor.",
+  "author": "Evan He <evan.he24@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev:web": "npm --prefix frontend run dev",
+    "dev:api": "npm --prefix backend run dev",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint",
+    "test": "npm --prefix backend test",
+    "check": "npm run lint && npm --prefix backend run check && npm run test && npm run build",
+    "audit": "npm --prefix frontend audit --omit=dev && npm --prefix backend audit --omit=dev"
+  }
+}

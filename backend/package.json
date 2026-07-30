@@ -1,0 +1,33 @@
+{
+  "name": "vibe-movie-backend",
+  "version": "0.1.0",
+  "description": "AI editing and video rendering service for VibeMovie",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check src/app.js && node --check src/config.js && node --check src/timeline.js && node --check src/services/render.js && node --check prompts/geminiPrompts.js && node --check remotion/VideoComposition.js && node --check remotion/index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.1.3",
+    "@remotion/bundler": "^4.0.503",
+    "@remotion/renderer": "^4.0.503",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.22.2",
+    "multer": "^2.2.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "remotion": "^4.0.503"
+  },
+  "keywords": [
+    "ai",
+    "video",
+    "editing",
+    "gemini",
+    "remotion"
+  ],
+  "author": "Evan He <evan.he24@gmail.com>",
+  "license": "MIT"
+}
