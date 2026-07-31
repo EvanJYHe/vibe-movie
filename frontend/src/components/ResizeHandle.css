@@ -1,0 +1,48 @@
+.resize-handle {
+  position: relative;
+  z-index: 30;
+  user-select: none;
+  background: var(--color-paper-2);
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+
+.resize-handle--vertical {
+  min-height: 4px;
+  cursor: row-resize;
+  border-block: var(--rule-thin) solid var(--color-rule);
+}
+
+.resize-handle--horizontal {
+  min-width: 4px;
+  cursor: col-resize;
+  border-inline: var(--rule-thin) solid var(--color-rule);
+}
+
+.resize-handle:hover,
+.resize-handle--active {
+  background: var(--color-accent);
+}
+
+.resize-handle__indicator {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+  background: var(--color-accent);
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+
+.resize-handle--vertical .resize-handle__indicator {
+  width: 2.5rem;
+  height: var(--rule-thin);
+}
+
+.resize-handle--horizontal .resize-handle__indicator {
+  width: var(--rule-thin);
+  height: 2.5rem;
+}
+
+.resize-handle:hover .resize-handle__indicator,
+.resize-handle--active .resize-handle__indicator {
+  opacity: 1;
+}
