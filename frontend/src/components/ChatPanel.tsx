@@ -10,6 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 import type { ChatMessage, ChatError } from "../types/chat";
 import { chatApi } from "../services/chatApi";
 import { chatStorage } from "../utils/chatStorage";
+import { geminiKeyStorage } from "../utils/geminiKeyStorage";
 import { useTimelineStore } from "../stores/timelineStore";
 import { convertTimelineToRemotionFormat } from "../utils/timeline";
 import { StudioIcon } from "./StudioIcon";
@@ -128,6 +129,11 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
     null
   );
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [apiKey, setApiKey] = useState(() => geminiKeyStorage.load());
+  const [apiKeyDraft, setApiKeyDraft] = useState("");
+  const [showKeySetup, setShowKeySetup] = useState(
+    () => !geminiKeyStorage.load()
+  );
 
   const { tracks, assets, selectedClipIds, updateClip } = useTimelineStore(
     useShallow((state) => ({
@@ -144,6 +150,7 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const keyInputRef = useRef<HTMLInputElement>(null);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -162,7 +169,7 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
   }, []);
 
   const handleSendMessage = async (content = inputValue.trim()) => {
-    if (!content || isLoading) return;
+    if (!content || isLoading || !apiKey) return;
 
     const userMessage: ChatMessage = {
       id: generateId(),
@@ -182,6 +189,7 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
     try {
       const timeline = convertTimelineToRemotionFormat(tracks, assets);
       const response = await chatApi.sendMessage(
+        apiKey,
         nextMessages,
         timeline,
         videoFile || undefined,
@@ -236,6 +244,27 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
     inputRef.current?.focus();
   };
 
+  const handleApiKeySubmit = (event: FormEvent) => {
+    event.preventDefault();
+    const nextKey = geminiKeyStorage.save(apiKeyDraft);
+    if (!nextKey) return;
+
+    setApiKey(nextKey);
+    setApiKeyDraft("");
+    setShowKeySetup(false);
+    setError(null);
+    window.setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
+  const forgetApiKey = () => {
+    geminiKeyStorage.clear();
+    setApiKey("");
+    setApiKeyDraft("");
+    setShowKeySetup(true);
+    setError(null);
+    window.setTimeout(() => keyInputRef.current?.focus(), 100);
+  };
+
   const canSend = inputValue.trim().length > 0 && !isLoading;
 
   return (
@@ -264,6 +293,21 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
           Inspect
         </button>
         <button
+          aria-label={apiKey ? "Change Gemini API key" : "Add Gemini API key"}
+          className={`inspector-icon-button inspector-key-button${
+            apiKey ? " is-set" : ""
+          }`}
+          onClick={() => {
+            setApiKeyDraft("");
+            setShowKeySetup(true);
+            window.setTimeout(() => keyInputRef.current?.focus(), 100);
+          }}
+          title={apiKey ? "Gemini API key set" : "Add Gemini API key"}
+          type="button"
+        >
+          <StudioIcon name="key" size={14} />
+        </button>
+        <button
           aria-label="Clear AI conversation"
           className="inspector-icon-button inspector-clear-button"
           disabled={messages.length === 0}
@@ -276,6 +320,60 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
       </div>
 
       {activePanel === "direct" ? (
+        !apiKey || showKeySetup ? (
+          <section className="api-key-panel" role="tabpanel">
+            <div className="api-key-setup">
+              <div className="api-key-status">
+                {apiKey ? "API key settings" : "API key not set"}
+              </div>
+              <h2>{apiKey ? "Replace your Gemini key" : "Connect Gemini"}</h2>
+              <p>
+                Add a Gemini API key to use AI edits. It is saved only for this
+                tab and sent with each request.
+              </p>
+
+              <form className="api-key-form" onSubmit={handleApiKeySubmit}>
+                <label className="sr-only" htmlFor="gemini-api-key">
+                  Gemini API key
+                </label>
+                <input
+                  autoComplete="off"
+                  id="gemini-api-key"
+                  onChange={(event) => setApiKeyDraft(event.target.value)}
+                  placeholder="Paste Gemini API key"
+                  ref={keyInputRef}
+                  spellCheck={false}
+                  type="password"
+                  value={apiKeyDraft}
+                />
+                <button disabled={!apiKeyDraft.trim()} type="submit">
+                  {apiKey ? "Replace" : "Use key"}
+                </button>
+              </form>
+
+              <div className="api-key-actions">
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Get a Gemini key · free tier
+                  <span aria-hidden="true">↗</span>
+                </a>
+                {apiKey && (
+                  <div>
+                    <button onClick={() => setShowKeySetup(false)} type="button">
+                      Cancel
+                    </button>
+                    <button onClick={forgetApiKey} type="button">
+                      Forget key
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        ) : (
         <section className="director-panel" role="tabpanel">
           <div className="director-conversation">
             {messages.length === 0 ? (
@@ -392,6 +490,7 @@ export function ChatPanel({ width = 400 }: ChatPanelProps) {
             </div>
           </form>
         </section>
+        )
       ) : (
         <section className="inspect-panel" role="tabpanel">
           <header className="inspector-section-head">

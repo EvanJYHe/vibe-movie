@@ -9,6 +9,7 @@ import { apiUrl } from "./api";
 
 class ChatApiClient {
   async sendMessage(
+    geminiApiKey: string,
     messages: ChatMessage[],
     timeline?: VideoTimeline,
     videoFile?: File,
@@ -29,6 +30,9 @@ class ChatApiClient {
 
       const response = await fetch(apiUrl("/api/chat"), {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${geminiApiKey.trim()}`,
+        },
         body: formData,
       });
 

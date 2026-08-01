@@ -72,7 +72,7 @@ npm run dev:api
 npm run dev:web
 ```
 
-Set `GEMINI_API_KEY` in `backend/.env` to enable AI editing. The editor itself remains usable without it.
+AI editing uses a Gemini API key supplied in the editor. The key is kept for the current browser tab and sent only with AI requests; the editor remains usable without one.
 
 ## Quality checks
 

@@ -9,6 +9,7 @@ export type StudioIconName =
   | "export"
   | "fullscreen"
   | "guides"
+  | "key"
   | "lock"
   | "magnet"
   | "media"
@@ -99,6 +100,13 @@ export function StudioIcon({
           <>
             <rect x="4" y="5" width="16" height="14" rx="1" />
             <path d="M8 5v14M16 5v14M4 9h16M4 15h16" />
+          </>
+        );
+      case "key":
+        return (
+          <>
+            <circle cx="8" cy="10" r="4" />
+            <path d="m11 13 8 8M15 17l2-2M17 19l2-2" />
           </>
         );
       case "lock":
