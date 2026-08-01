@@ -49,8 +49,9 @@ export function LandingPage() {
                 <span className="home-hero__line">in less time.</span>
               </h1>
               <p className="home-hero__lede">
-                A full video editor with AI built in. Make cuts, add effects,
-                and refine your timeline faster.
+                A fully featured video editor with AI built in. Edit every
+                detail yourself or describe what you want and let AI do the
+                work.
               </p>
               <a
                 className="home-action-link"
