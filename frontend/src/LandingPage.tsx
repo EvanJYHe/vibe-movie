@@ -44,9 +44,9 @@ export function LandingPage() {
               </p>
               <h1 className="home-hero__title" id="home-hero-title">
                 <span className="home-hero__line">
-                  <span className="home-hero__verb">make</span> the movie
+                  <span className="home-hero__verb">make</span> better videos
                 </span>
-                <span className="home-hero__line">but easier.</span>
+                <span className="home-hero__line">in less time.</span>
               </h1>
               <p className="home-hero__lede">
                 A full video editor with AI built in. Make cuts, add effects,

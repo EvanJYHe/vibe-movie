@@ -39,7 +39,7 @@
   --text-md: 1.25rem;
   --text-lg: 1.5625rem;
   --text-lede: clamp(0.9375rem, 1.5vw, 1.125rem);
-  --text-display: clamp(3.25rem, 6.35vw, 5.5rem);
+  --text-display: clamp(2.75rem, 6.35vw, 5.5rem);
 
   --rule-thin: 0.0625rem;
   --rule-strong: 0.125rem;
@@ -65,7 +65,6 @@
   );
   --page-max: 100rem;
   --hero-max: 75rem;
-  --measure-display: 11ch;
   --touch-target: 2.75rem;
   --nav-height: 4rem;
   --nav-action-height: 2.25rem;
@@ -250,7 +249,7 @@
 
 .home-hero__title {
   min-width: 0;
-  max-width: var(--measure-display);
+  max-width: 100%;
   margin: 0;
   overflow-wrap: anywhere;
   font-family: var(--font-display);
@@ -270,6 +269,7 @@
 
 .home-hero__line {
   display: block;
+  white-space: nowrap;
 }
 
 .home-hero__lede {
@@ -371,6 +371,60 @@
 @keyframes home-enter-rule {
   to {
     transform: scaleX(1);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .home-nav-action {
+    min-height: var(--touch-target);
+    padding-inline: clamp(var(--space-sm), 4vw, var(--space-lg));
+  }
+
+  .home-hero {
+    gap: clamp(var(--space-md), 5vw, var(--space-lg));
+    align-items: start;
+    padding-block-start: clamp(
+      calc(var(--space-lg) + var(--space-2xs)),
+      7vw,
+      var(--space-xl)
+    );
+    padding-block-end: var(--space-md);
+  }
+
+  .home-hero__copy {
+    justify-items: center;
+    gap: clamp(
+      calc(var(--space-md) + var(--space-2xs)),
+      5vw,
+      var(--space-lg)
+    );
+    text-align: center;
+  }
+
+  .home-hero__title {
+    font-size: clamp(2.75rem, 11vw, 3.25rem);
+  }
+
+  .home-hero__lede {
+    max-width: 34ch;
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  .home-action-link {
+    justify-self: center;
+  }
+
+  .home-apparatus {
+    width: min(100%, 22rem);
+  }
+
+  .home-apparatus::after {
+    height: clamp(
+      var(--space-xl),
+      14%,
+      calc(var(--space-2xl) + var(--space-xs))
+    );
   }
 }
 
