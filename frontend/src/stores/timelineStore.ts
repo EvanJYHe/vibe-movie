@@ -282,6 +282,9 @@ export const useTimelineStore = create<TimelineStore>()(
 
   moveClip: (clipId, newTrackId, newStartTime) => {
     set((state) => {
+      const targetTrack = state.tracks.find((track) => track.id === newTrackId);
+      if (!targetTrack || targetTrack.locked) return state;
+
       let clipToMove: Clip | undefined;
       const fps = 30;
 

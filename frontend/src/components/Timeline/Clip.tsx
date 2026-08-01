@@ -105,17 +105,6 @@ export const Clip: React.FC<ClipProps> = React.memo(function Clip({
     [clip, onOpenActions, pixelsPerSecond, selectClip]
   );
 
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.button === 2) {
-        e.stopPropagation();
-        return;
-      }
-      listeners?.onPointerDown?.(e);
-    },
-    [listeners]
-  );
-
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if ((e.key === "Delete" || e.key === "Backspace") && clip.selected) {
@@ -176,6 +165,7 @@ export const Clip: React.FC<ClipProps> = React.memo(function Clip({
     <div
       ref={setNodeRef}
       {...(isTrimming ? {} : attributes)}
+      {...(isTrimming ? {} : listeners)}
       aria-label={`${clip.name}, ${clip.type} clip${
         clip.muted ? ", muted" : ""
       }`}
@@ -191,7 +181,6 @@ export const Clip: React.FC<ClipProps> = React.memo(function Clip({
       onContextMenu={handleContextMenu}
       onDoubleClick={handleDoubleClick}
       onKeyDown={handleKeyDown}
-      onPointerDown={isTrimming ? undefined : handlePointerDown}
       tabIndex={0}
     >
       <div

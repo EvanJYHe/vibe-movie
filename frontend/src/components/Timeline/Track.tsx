@@ -41,7 +41,8 @@ export const Track: React.FC<TrackProps> = React.memo(function Track({
 
   const { setNodeRef, isOver } = useDroppable({
     id: track.id,
-    data: { track }
+    data: { track },
+    disabled: track.locked,
   });
 
   const handleTrackClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {

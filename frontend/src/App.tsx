@@ -118,6 +118,10 @@ function App() {
     setDragActive((event.active.data.current as DragPayload | undefined) ?? null);
   }, []);
 
+  const handleDragCancel = useCallback(() => {
+    setDragActive(null);
+  }, []);
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       setDragActive(null);
@@ -127,7 +131,7 @@ function App() {
       const activeData = active.data.current as DragPayload | undefined;
       const dropData = over.data.current as DropPayload | undefined;
       const targetTrack = dropData?.track;
-      if (!activeData || !targetTrack) return;
+      if (!activeData || !targetTrack || targetTrack.locked) return;
 
       if (activeData.clip) {
         const shiftedStart =
@@ -232,6 +236,7 @@ function App() {
 
       <DndContext
         collisionDetection={rectIntersection}
+        onDragCancel={handleDragCancel}
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
         sensors={sensors}
