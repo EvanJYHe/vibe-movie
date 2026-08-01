@@ -11,7 +11,6 @@
   --color-paper-deep: oklch(10.5% 0.005 89);
   --color-ink: oklch(96% 0.006 89);
   --color-ink-2: oklch(72% 0.008 89);
-  --color-quiet: oklch(60% 0.008 89);
   --color-rule: oklch(96% 0.006 89 / 0.08);
   --color-rule-strong: oklch(96% 0.006 89 / 0.18);
   --color-accent: oklch(76.57% 0.0991 89.3);
@@ -34,7 +33,6 @@
   --space-3xl: 6rem;
   --space-4xl: 9rem;
 
-  --text-micro: 0.625rem;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -57,7 +55,6 @@
   --delay-enter-2: 160ms;
   --delay-enter-3: 240ms;
   --delay-enter-4: 320ms;
-  --delay-enter-5: 400ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   --page-gutter: clamp(var(--space-lg), 5vw, var(--space-2xl));
@@ -358,85 +355,6 @@
   pointer-events: none;
 }
 
-.home-site-footer {
-  min-height: calc(var(--touch-target) + var(--space-sm));
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding-inline: var(--header-gutter);
-  border-block-start: var(--rule-thin) solid var(--color-rule);
-  color: var(--color-quiet);
-  font-size: var(--text-xs);
-  line-height: 1;
-}
-
-.home-site-footer__credit {
-  margin: 0;
-  color: var(--color-ink-2);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-.home-site-footer__heart {
-  color: var(--color-accent);
-  font-family: var(--font-body);
-  font-size: 1em;
-  line-height: 1;
-}
-
-.home-site-footer__links {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-lg);
-}
-
-.home-site-footer__link {
-  min-height: var(--touch-target);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  color: var(--color-quiet);
-  font-size: var(--text-micro);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition:
-    color var(--dur-short) var(--ease-out),
-    transform var(--dur-micro) var(--ease-out);
-}
-
-.home-site-footer__icon {
-  width: var(--space-md);
-  height: var(--space-md);
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.5;
-}
-
-.home-site-footer__icon--fill {
-  fill: currentColor;
-  stroke: none;
-}
-
-.home-site-footer__link:focus-visible {
-  color: var(--color-accent);
-}
-
-.home-site-footer__link:active {
-  color: var(--color-accent-bright);
-  transform: translateY(var(--space-3xs));
-}
-
 @keyframes home-enter-fade {
   to {
     opacity: 1;
@@ -458,8 +376,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .home-wordmark,
-  .home-nav-action,
-  .home-site-footer {
+  .home-nav-action {
     opacity: 0;
     animation: home-enter-fade var(--dur-long) var(--ease-out) forwards;
   }
@@ -509,10 +426,6 @@
     animation: home-enter-fade var(--dur-long) var(--ease-out)
       var(--delay-enter-4) forwards;
   }
-
-  .home-site-footer {
-    animation-delay: var(--delay-enter-5);
-  }
 }
 
 @media (min-width: 48rem) {
@@ -524,7 +437,7 @@
     height: 100dvh;
     min-height: 0;
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
   .home-page-shell main {
@@ -584,10 +497,6 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .home-site-footer__link:hover {
-    color: var(--color-ink);
-  }
-
   .home-nav-action:hover {
     color: var(--color-accent-bright);
   }
@@ -604,38 +513,6 @@
   .home-action-link:hover::after,
   .home-action-link:focus-visible::after {
     transform: scaleX(1);
-  }
-}
-
-@media (max-width: 47.999rem) {
-  .home-site-footer {
-    min-height: auto;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0;
-    padding-block: var(--space-xs);
-  }
-
-  .home-site-footer__links {
-    width: 100%;
-    justify-content: space-between;
-    gap: var(--space-xs);
-  }
-
-  .home-site-footer__label {
-    position: absolute;
-    width: var(--rule-thin);
-    height: var(--rule-thin);
-    padding: 0;
-    margin: calc(var(--rule-thin) * -1);
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-  }
-
-  .home-site-footer__icon {
-    width: var(--space-lg);
-    height: var(--space-lg);
   }
 }
 
