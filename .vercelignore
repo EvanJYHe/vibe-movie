@@ -1,0 +1,11 @@
+# Frontend deployments never need the backend service or repository artwork.
+backend/
+docs/
+
+# Vite output is rebuilt by Vercel.
+frontend/dist/
+
+# Never upload local environment files.
+**/.env
+**/.env.*
+!**/.env.example
