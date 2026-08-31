@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./LandingPage.css";
 
 const editorPath = "/editor";
@@ -7,8 +8,13 @@ function preloadEditor() {
 }
 
 export function LandingPage() {
+  const [isHeroReady, setIsHeroReady] = useState(false);
+
   return (
-    <div className="landing-page" id="top">
+    <div
+      className={`landing-page${isHeroReady ? " is-ready" : ""}`}
+      id="top"
+    >
       <div className="home-page-shell">
         <header className="home-site-header" aria-label="Primary">
           <a
@@ -72,6 +78,8 @@ export function LandingPage() {
                 height="1536"
                 fetchPriority="high"
                 decoding="async"
+                onLoad={() => setIsHeroReady(true)}
+                onError={() => setIsHeroReady(true)}
               />
             </figure>
           </section>
